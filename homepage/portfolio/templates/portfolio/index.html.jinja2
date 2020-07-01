@@ -1,48 +1,52 @@
 <!doctype html>
 
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
+    <meta charset="utf-8">
 
-  <title>Fabian Volkers</title>
-  <meta name="description" content="Fabian Volkers' Portfolio">
-  <meta name="author" content="Fabian Volkers">
+    <title>Fabian Volkers</title>
+    <meta name="description" content="Fabian Volkers' Portfolio">
+    <meta name="author" content="Fabian Volkers">
 
-  <link rel="stylesheet" href="css/styles.css?v=1.0">
+    {% load static %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'portfolio/style.css' %}">
 
 </head>
 
 <body>
-<h1>Fabian Volkers</h1>
+    <h1>Fabian Volkers</h1>
 
-<h2>Welcome</h2>
+    <h2>Welcome</h2>
 
-<h2>Projects</h2>
-{% for project in projects %}
-<div>
-<h3>{{  project.name }}</h3>
-<img/>
-<a href="{% url 'portfolio:project-detail' project.slug %}">More Info</a>
-</div>
-{% endfor %}
+    <h2>Projects</h2>
+    {% for project in projects %}
+    <div>
+        <h3>{{  project.name }}</h3>
+        <img />
+        <a href="{% url 'portfolio:project-detail' project.slug %}">More Info</a>
+    </div>
+    {% endfor %}
 
-<h2>Photography</h2>
+    <h2>Photography</h2>
 
-<h2>Contact</h2>
-  <form action="{% url 'portfolio:contact' %}" method="post" id='contact-form'>
-{% csrf_token %}
-<label for="email">Email Address</label><br>
-<input type="email" name="email" id="email" value="fabian.volkers+test@gmail.com">
-<br>
-<label for="subject">Subject</label><br>
-<input type="text" name="subject" id="subject" value="Subject">
-<br>
-<label for="message">Message</label><br>
-<textarea name="message" id="message" value="Enter your message here..." form='contact-form'></textarea>
-<br>
+    <h2>Contact</h2>
+    <form action="{% url 'portfolio:contact' %}" method="post" id='contact-form'>
+        {% csrf_token %}
+        <label for="email">Email Address</label><br>
+        <input type="email" name="email" id="email" value="fabian.volkers+test@gmail.com">
+        <br>
+        <label for="subject">Subject</label><br>
+        <input type="text" name="subject" id="subject" value="Subject">
+        <br>
+        <label for="message">Message</label><br>
+        <textarea name="message" id="message" value="Enter your message here..." form='contact-form'></textarea>
+        <br>
 
 
-<input type="submit" value="Submit">
-</form>
+        <input type="submit" value="Submit">
+    </form>
 </body>
+
 </html>
