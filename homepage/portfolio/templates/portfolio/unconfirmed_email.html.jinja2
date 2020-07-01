@@ -1,0 +1,7 @@
+Please confirm your email before sending more messages.
+<br>
+<form action="{% url 'portfolio:send-confirmation-email' contact.id %}" method="post">
+{% csrf_token %}
+<input type='email' value='{{ contact.email_address }}'></input>
+<input type='submit'>Resend confirmation email</input>
+</form>
