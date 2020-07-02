@@ -16,9 +16,30 @@ from dotenv import load_dotenv
 
 #Load environment variables from .env file
 load_dotenv()
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+DEV_MODE = os.getenv('DEV_MODE')
+
+if DEV_MODE:
+    PROTO = 'http'
+    HOST = '127.0.0.1'
+    PORT = '8000'
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+else:
+    PROTO = 'https'
+    HOST = os.getenv('HOST')
+    MEDIA_URL = f'{PROTO}://media.{HOST}'
+    MEDIA_ROOT = '/var/www/media'
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -28,9 +49,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEV_MODE')
+DEBUG = DEV_MODE
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    HOST
+]
 
 
 # Application definition
@@ -79,12 +102,7 @@ WSGI_APPLICATION = 'homepage.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+
 
 
 # Password validation

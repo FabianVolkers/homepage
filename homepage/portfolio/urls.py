@@ -1,6 +1,8 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
-from . import views
+from . import views 
 
 app_name = 'portfolio'
 urlpatterns = [
@@ -14,3 +16,6 @@ urlpatterns = [
     path('collection/<slug>', views.CollectionView.as_view(), name='collection-detail'),
     path('photo/<slug>', views.PhotoView.as_view(), name='photo-detail')
 ]
+
+if settings.DEV_MODE:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
