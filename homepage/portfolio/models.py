@@ -6,9 +6,38 @@ from django.core.mail import send_mail, EmailMessage, BadHeaderError, EmailMulti
 from django.conf import settings
 from django.template.loader import get_template
 
+#from .urls import urlpatterns
 #from .mail import send_mail
 
 # Create your models here.
+class Category(models.Model):
+    name = models.CharField(max_length=64)
+    slug = models.SlugField(editable=False)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+    def save(self):
+        self.slug = generate_slug(self.name)
+        super().save()
+    
+class BaseEntry(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100, editable=False)
+    description = models.TextField()
+    image = models.ImageField(upload_to='images')
+    created = models.DateTimeField()
+    spotlight = models.BooleanField()
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+    def save(self):
+        self.slug = generate_slug(self.name)
+        super().save()
+
 class Project(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, editable=False)
@@ -62,8 +91,10 @@ class Contact(models.Model):
 
     
     def send_confirmation_email(self, token):
-        print(token)
-        url = f'http://127.0.0.1:8000/contact/confirm-email/{self.id}/{token}'
+        if settings.DEV_MODE:
+            url = f'{settings.PROTO}://{settings.HOST}:{settings.PORT}/contact/confirm-email/{self.id}/{token}'
+        else:
+            url = f'{settings.PROTO}://{settings.HOST}/contact/confirm-email/{self.id}/{token}'
         print(url)
         send_mail(
             subject='Please Confirm your email address',
@@ -92,7 +123,7 @@ class Message(models.Model):
             body=self.content
         )
 
-        email_template = get_template('portfolio/contact_email.html.jinja2')
+        email_template = get_template('portfolio/contact_email.html')
         context = {
             'from': self.contact.email_address,
             'subject': self.subject,

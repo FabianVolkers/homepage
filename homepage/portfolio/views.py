@@ -7,18 +7,19 @@ from django.views import generic
 from .models import Project, Collection, Photo, Message, Contact
 from .tokens import account_activation_token
 
+
 # Create your views here.
 class ProjectView(generic.DetailView):
     model = Project
-    template_name = 'portfolio/project.html.jinja2'
+    template_name = 'portfolio/project.html'
 
 class PhotoView(generic.DetailView):
     model = Photo
-    template_name = 'portfolio/photo.html.jinja2'
+    template_name = 'portfolio/photo.html'
 
 class CollectionView(generic.DetailView):
     model = Collection
-    template_name = 'portfolio/collection.html.jinja2'
+    template_name = 'portfolio/collection.html'
 
 class MessageView(generic.ListView):
     model = Message
@@ -30,7 +31,7 @@ def index(request):
         'projects': projects,
         'collections': collections
     }
-    return render(request, 'portfolio/index.html.jinja2', context)
+    return render(request, 'portfolio/index.html', context)
 
 
 
@@ -67,7 +68,7 @@ def contact(request):
 def contacted(request, message_id):
     message = get_object_or_404(Message, id=message_id)
     context = {'message': message}
-    return render(request, 'portfolio/contact.html.jinja2', context)
+    return render(request, 'portfolio/contact.html', context)
 
 def confirm_email(request, contact_id, token):
     contact = get_object_or_404(Contact, id=contact_id)
@@ -77,14 +78,14 @@ def confirm_email(request, contact_id, token):
         messages = get_list_or_404(Message, contact=contact)
         for message in messages:
             message.send()
-        return render(request, 'portfolio/confirmed_email.html.jinja2')
+        return render(request, 'portfolio/confirmed_email.html')
     else:
         raise Http404('Invalid token for user')
 
 def unconfirmed_email(request, contact_id):
     contact = get_object_or_404(Contact, id=contact_id)
     context = {'contact': contact}
-    return render(request, 'portfolio/unconfirmed_email.html.jinja2', context)
+    return render(request, 'portfolio/unconfirmed_email.html', context)
 
 def send_confirmation_email(request, contact_id):
     contact = get_object_or_404(Contact, id=contact_id)
