@@ -6,20 +6,86 @@ from django.core.mail import send_mail, EmailMessage, BadHeaderError, EmailMulti
 from django.conf import settings
 from django.template.loader import get_template
 
-#from .urls import urlpatterns
-#from .mail import send_mail
+detail_views = [
+    ('portfolio:project-detail', 'Project View'),
+    ('portfolio:photo-detail', 'Photo View'),
+    ('portfolio:entry-detail', 'Base View')
+]
+section_postitions = []
+for i in range(settings.MAX_SECTIONS):
+    section_postitions.append((i, i))
 
+navlink_positions = []
+for j in range(settings.MAX_NAVLINKS):
+    navlink_positions.append((j, j))
+
+footerlink_positions = []
+for k in range(settings.MAX_FOOTERLINKS):
+    footerlink_positions.append((k, k))
 # Create your models here.
-class Category(models.Model):
+class Setting(models.Model):
+    key = models.CharField(max_length=256)
+    value = models.CharField(max_length=1024)
+    def __str__(self):
+        return f'{self.key}={self.value}'
+
+class Icon(models.Model):
+    name = models.CharField(max_length=64)
+    icon_class = models.CharField(max_length=64)
+
+    def __str__(self):
+        return self.name
+class Link(models.Model):
+    name = models.CharField(max_length=12)
+    url = models.CharField(max_length=256)
+    view = models.CharField(max_length=64, default='portfolio:project-detail', choices=detail_views)
+    def __str__(self):
+        return self.url
+
+class FooterLink(Link):
+    position = models.IntegerField(null=True, choices=footerlink_positions, unique=True)
+    icon = models.ForeignKey(Icon, on_delete=models.SET_NULL, null=True)
+
+class NavLink(Link):
+    #link_positions = range(1, len(NavLink.objects.all()))
+    position = models.IntegerField(null=True, choices=navlink_positions, unique=True)
+class SectionType(models.Model):
+    name = name = models.CharField(max_length=64)
+    template_name = models.CharField(max_length=64)
+    default_position = models.IntegerField()
+    
+
+    def __str__(self):
+        return self.name
+class Section(models.Model):
+    #section_positions = range(1, len(Section.objects.all()))
     name = models.CharField(max_length=64)
     slug = models.SlugField(editable=False)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
+    section_type = models.ForeignKey(SectionType, on_delete=models.SET_NULL, null=True)
+    position = models.IntegerField(null=True, choices=section_postitions, unique=True)
+    nav_bar_link = models.BooleanField(default=True)
+    nav_link = models.ForeignKey(NavLink, on_delete=models.SET_NULL, null=True)
+    
 
     def __str__(self):
         return self.name
 
     def save(self):
+        """ TODO: Add support for default position
+        sections = Section.objects.order_by(position)
+        if self.position == None:
+            self.position = self.section_type.default_position """
+
         self.slug = generate_slug(self.name)
+        if self.nav_bar_link:
+            try:
+                NavLink.objects.get(name=self.slug)
+            except models.ObjectDoesNotExist:
+                position = len(NavLink.objects.all())
+                navlink = NavLink(name=self.slug, url=f'/#{self.slug}', position=position)
+                navlink.save()
+                self.nav_link = navlink
         super().save()
     
 class BaseEntry(models.Model):
@@ -29,7 +95,8 @@ class BaseEntry(models.Model):
     image = models.ImageField(upload_to='images')
     created = models.DateTimeField()
     spotlight = models.BooleanField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    section = models.ForeignKey(Section, on_delete=models.SET_NULL, null=True)
+    detail_view = models.CharField(max_length=64, default='portfolio.views.BaseEntryView', choices=detail_views)
 
     def __str__(self):
         return self.name
@@ -37,7 +104,7 @@ class BaseEntry(models.Model):
     def save(self):
         self.slug = generate_slug(self.name)
         super().save()
-
+""" 
 class Project(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, editable=False)
@@ -80,7 +147,7 @@ class Photo(models.Model):
     def save(self):
         self.slug = generate_slug(self.name)
         super().save()
-
+ """
 class Contact(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     email_address = models.EmailField()
