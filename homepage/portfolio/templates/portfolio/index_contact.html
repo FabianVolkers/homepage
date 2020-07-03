@@ -1,0 +1,15 @@
+<form action="{% url 'portfolio:contact' %}" method="post" id='contact-form'>
+    {% csrf_token %}
+    <label for="email">Email Address</label><br>
+    <input type="email" name="email" id="email" value="fabian.volkers+test@gmail.com">
+    <br>
+    <label for="subject">Subject</label><br>
+    <input type="text" name="subject" id="subject" value="Subject">
+    <br>
+    <label for="message">Message</label><br>
+    <textarea name="message" id="message" value="Enter your message here..." form='contact-form'></textarea>
+    <br>
+
+
+    <input type="submit" value="Submit">
+</form>

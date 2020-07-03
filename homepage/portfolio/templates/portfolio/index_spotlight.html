@@ -1,0 +1,4 @@
+{% for spotlight in spotlights %}
+<h4>{{ spotlight.name }}</h4>
+<img src='{{ MEDIA_URL }}/{{ spotlight.image }}'>
+{% endfor %}

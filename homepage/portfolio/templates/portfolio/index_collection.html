@@ -1,0 +1,10 @@
+<div class="collection-container">
+{% for entry in section.baseentry_set.all %}
+
+<div id="{{ entry.slug }}" class="collection-entry {% cycle 'column-1' 'column-2' 'column-3' %}">
+<h4>{{ entry.name }}</h4>
+<img src="{{ MEDIA_URL }}/{{ entry.image }}">
+<a href="{% url entry.detail_view entry.slug %}">More Info</a>
+</div>
+{% endfor %}
+</div>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>{% block title %}Fabian Volkers{% endblock title %}</title>
+    <meta name="description" content="{% block description %}Fabian Volkers' Portfolio{% endblock description %}">
+    <meta name="author" content="Fabian Volkers">
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'portfolio/style.css' %}">
+    <script src="https://kit.fontawesome.com/0d7dc3f746.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    {% block navbar %}
+    <div class="nav-container">
+        <nav>
+            <input type="checkbox" id="nav-toggle">
+            <label for="nav-toggle" class="burger-menu">
+                <i class="fas fa-bars"></i>
+            </label>
+            <div class="left-menu">
+                <a href="/">Home</a>
+                {% for navlink in navlinks %}
+                <a href="{{ navlink.url }}">{{ navlink.name }}</a>
+                {% endfor %}
+            </div>
+            <a href="/" class="logo">Fabian Volkers</a>
+        </nav>
+    </div>
+    {% endblock navbar %}
+    {% block content %}
+    {% lorem %}
+    {% endblock content %}
+    {% block footer %}
+    <footer>
+    <div id='footer-left'>
+    <h4>Sitemap</h4>
+    <ul>
+    {% for section in sections %}
+    <li>
+    <a href="{{ section.url }}">{{ section.name }}</a>
+    </li>
+    {% endfor %}
+    </ul>
+    </div>
+    <div id='footer-center'>
+    <h4>Legal</h4>
+    <ul>
+    <li>
+    <a href={% url 'portfolio:imprint' %}>Imprint</a>
+    </li>
+    <li>
+    <a href={% url 'portfolio:privacy' %}>Privacy</a>
+    </li>
+    </ul>
+    </div>
+    <div id='footer-right'>
+    <h4>Links</h4>
+    <ul>
+    {% for link in footerlinks %}
+    <li>
+    <a href="{{ link.url }}"><i class="{{ link.icon.icon_class }}"></i>{{ link.name }}</a>
+    </li>
+    {% endfor %}
+    </ul>
+    </div>
+    </footer>
+    {% endblock footer %}
+
+</body>
+
+</html>

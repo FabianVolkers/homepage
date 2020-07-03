@@ -1,21 +1,11 @@
-<!doctype html>
+{% extends 'portfolio/base_page.html' %}
+{% block title %}{{ baseentry.name }}{% endblock title %}
+{% block description %}{{ baseentry.name }}{% endblock description %}
 
-<html lang="en">
-<head>
-  <meta charset="utf-8">
+{% block content %}
+<h1>{{ baseentry.name }}</h1>
+<p>{{ baseentry.description }}</p>
+{% endblock content %}
 
-  <title>{{ project.name }}</title>
-  <meta name="description" content='{{ project.description }}'>
-  <meta name="author" content="Fabian Volkers">
-
-  <link rel="stylesheet" href="css/styles.css?v=1.0">
-
-</head>
-
-<body>
-<h1>{{ project.name }}</h1>
-<p>{{ project.description }}</p>
-</body>
-</html>
 
 
