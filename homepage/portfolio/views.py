@@ -4,34 +4,61 @@ from django.urls import reverse
 from django.views import generic
 #from django.contrib.auth.tokens import default_token_generator
 
-from .models import Project, Collection, Photo, Message, Contact
+from .models import Message, Contact, Section, BaseEntry, NavLink, FooterLink
 from .tokens import account_activation_token
 
 
 # Create your views here.
-class ProjectView(generic.DetailView):
-    model = Project
+class BaseDetailView(generic.DetailView):
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context['navlinks'] = NavLink.objects.all()
+        return context
+
+class ProjectView(BaseDetailView):
+    model = BaseEntry
     template_name = 'portfolio/project.html'
 
-class PhotoView(generic.DetailView):
-    model = Photo
+class PhotoView(BaseDetailView):
+    model = BaseEntry
     template_name = 'portfolio/photo.html'
 
-class CollectionView(generic.DetailView):
-    model = Collection
+class CollectionView(BaseDetailView):
+    model = BaseEntry
     template_name = 'portfolio/collection.html'
 
 class MessageView(generic.ListView):
     model = Message
     template_name = 'portfolio/'
-def index(request):
-    projects = get_list_or_404(Project, spotlight=True)
-    collections = get_list_or_404(Collection, spotlight=True)
-    context = {
-        'projects': projects,
-        'collections': collections
-    }
-    return render(request, 'portfolio/index.html', context)
+
+class BaseTemplateView(generic.TemplateView):
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context['navlinks'] = NavLink.objects.order_by('position')
+        context['footerlinks'] = FooterLink.objects.order_by('position')
+        return context    
+
+class ImprintView(BaseTemplateView):
+    template_name = 'portfolio/imprint.html'
+
+class PrivacyView(BaseTemplateView):
+    template_name = 'portfolio/privacy.html'
+
+class IndexView(BaseTemplateView):
+    template_name = 'portfolio/index.html'
+    
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+
+        context['sections'] = Section.objects.order_by('position')
+        context['spotlights'] = BaseEntry.objects.filter(spotlight=True)
+        return context 
 
 
 
