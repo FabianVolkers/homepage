@@ -2,10 +2,10 @@
 {% block content %}
 {% for section in sections %}
 {% if section.slug != 'spotlight' or section.slug == 'spotlight' and spotlights.count > 0 %}
-<section id="{{ section.slug }}">
+<section id="{{ section.slug }}" style="grid-row: {{ forloop.counter }}">
     <h2>{{ section.name }}</h2>
     <p>{{ section.description }}</p>
-    {% include section.section_type.template_name %}
+    {% include section.section_type.template_name with entries=section.baseentry_set.all  %}
 </section>
 {% endif %}
 {% endfor %}

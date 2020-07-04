@@ -1,4 +1,15 @@
-{% for spotlight in spotlights %}
-<h4>{{ spotlight.name }}</h4>
-<img src='{{ MEDIA_URL }}/{{ spotlight.image }}'>
-{% endfor %}
+<div class="spotlight-container">
+    {% for spotlight in spotlights %}
+    <a href="{% url spotlight.detail_view spotlight.slug %}">
+    <img src='{{ MEDIA_URL }}/{{ spotlight.image }}' class="spotlight-img">
+    </a>
+    <span class="spotlight-caption">{{ spotlight.name }}</span>
+    {% endfor %}
+    <span class="button-left" onclick="plusDivs(-1)">&#10094;</span>
+    <span class="button-right" onclick="plusDivs(+1)">&#10095;</span>
+    <div class="spotlight-indicator-container">
+    {% for spotlight in spotlights %}
+    <span class="indicator-transparent spotlight-indicator" onclick="currentDiv({{ forloop.counter }})"></span>
+    {% endfor %}
+    </div>
+</div>
