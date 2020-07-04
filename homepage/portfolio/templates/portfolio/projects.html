@@ -1,0 +1,11 @@
+{% extends 'portfolio/base_page.html' %}
+{% block title %}Projects{% endblock title %}
+{% block description %}Projects{% endblock description %}
+
+{% block content %}
+<h1>Projects</h1>
+{% include 'portfolio/index_collection.html' with entries=projects %}
+{% endblock content %}
+
+
+
