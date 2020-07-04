@@ -6,11 +6,19 @@ from django.core.mail import send_mail, EmailMessage, BadHeaderError, EmailMulti
 from django.conf import settings
 from django.template.loader import get_template
 
-detail_views = [
-    ('portfolio:project-detail', 'Project View'),
+views = [
+    ('portfolio:project-detail', 'Project Detail View'),
+    ('portfolio:project-list', 'Project List View'),
     ('portfolio:photo-detail', 'Photo View'),
     ('portfolio:entry-detail', 'Base View')
 ]
+
+
+
+page_positions = []
+for h in range(settings.MAX_PAGES):
+    page_positions.append((h, h))
+
 section_postitions = []
 for i in range(settings.MAX_SECTIONS):
     section_postitions.append((i, i))
@@ -35,10 +43,11 @@ class Icon(models.Model):
 
     def __str__(self):
         return self.name
+
 class Link(models.Model):
     name = models.CharField(max_length=12)
     url = models.CharField(max_length=256)
-    view = models.CharField(max_length=64, default='portfolio:project-detail', choices=detail_views)
+    view = models.CharField(max_length=64, default='portfolio:project-detail', choices=views)
     def __str__(self):
         return self.url
 
@@ -49,8 +58,15 @@ class FooterLink(Link):
 class NavLink(Link):
     #link_positions = range(1, len(NavLink.objects.all()))
     position = models.IntegerField(null=True, choices=navlink_positions, unique=True)
+
+class Page(models.Model):
+    name = models.CharField(max_length=24)
+    template_name = models.CharField(max_length=64)
+    nav_bar_link = models.BooleanField(default=True)
+    nav_link = models.ForeignKey(NavLink, on_delete=models.SET_NULL, null=True)
+
 class SectionType(models.Model):
-    name = name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64)
     template_name = models.CharField(max_length=64)
     default_position = models.IntegerField()
     
@@ -96,7 +112,7 @@ class BaseEntry(models.Model):
     created = models.DateTimeField()
     spotlight = models.BooleanField()
     section = models.ForeignKey(Section, on_delete=models.SET_NULL, null=True)
-    detail_view = models.CharField(max_length=64, default='portfolio.views.BaseEntryView', choices=detail_views)
+    detail_view = models.CharField(max_length=64, default='portfolio.views.BaseEntryView', choices=views)
 
     def __str__(self):
         return self.name
@@ -176,6 +192,7 @@ class Message(models.Model):
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
     subject = models.CharField(max_length=100)
     content = models.TextField()
+    sent = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.contact.email_address} - {self.subject}"
@@ -200,6 +217,8 @@ class Message(models.Model):
 
         email.attach_alternative(html_message, 'text/html')
         email.send(fail_silently=False)
+        # TODO: Check if email was sent successfi;;y
+        self.sent = True
 
 
 def generate_slug(name):

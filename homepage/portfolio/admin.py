@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Message, Contact, BaseEntry, Section, SectionType, NavLink, Setting, FooterLink, Icon
+from .models import Message, Contact, BaseEntry, Section, SectionType, NavLink, Setting, FooterLink, Icon, Page
 
 # Register your models here.
 
@@ -19,3 +19,4 @@ admin.site.register(NavLink)
 admin.site.register(Setting)
 admin.site.register(FooterLink)
 admin.site.register(Icon)
+admin.site.register(Page)
