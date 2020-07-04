@@ -14,13 +14,28 @@ class BaseDetailView(generic.DetailView):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         # Add in a QuerySet of all the books
+        context['sections'] = Section.objects.order_by('position')
         context['navlinks'] = NavLink.objects.all()
+        context['footerlinks'] = FooterLink.objects.order_by('position')
         return context
 
-class ProjectView(BaseDetailView):
+class BaseListView(generic.ListView):
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context['sections'] = Section.objects.order_by('position')
+        context['navlinks'] = NavLink.objects.order_by('position')
+        context['footerlinks'] = FooterLink.objects.order_by('position')
+        return context    
+class ProjectDetailView(BaseDetailView):
     model = BaseEntry
     template_name = 'portfolio/project.html'
 
+class ProjectListView(BaseListView):
+    model = BaseEntry
+    context_object_name = 'projects'
+    template_name = 'portfolio/projects.html'
 class PhotoView(BaseDetailView):
     model = BaseEntry
     template_name = 'portfolio/photo.html'
@@ -38,6 +53,7 @@ class BaseTemplateView(generic.TemplateView):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         # Add in a QuerySet of all the books
+        context['sections'] = Section.objects.order_by('position')
         context['navlinks'] = NavLink.objects.order_by('position')
         context['footerlinks'] = FooterLink.objects.order_by('position')
         return context    
@@ -50,13 +66,13 @@ class PrivacyView(BaseTemplateView):
 
 class IndexView(BaseTemplateView):
     template_name = 'portfolio/index.html'
-    
+
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         # Add in a QuerySet of all the books
 
-        context['sections'] = Section.objects.order_by('position')
+        
         context['spotlights'] = BaseEntry.objects.filter(spotlight=True)
         return context 
 
@@ -83,7 +99,7 @@ def contact(request):
 
     if message.contact.email_confirmed:
         message.send()
-        return HttpResponseRedirect(reverse('portfolio:contacted', args=[message.id]))
+        return HttpResponseRedirect(reverse('portfolio:contact-thanks', args=[message.id]))
     else:
         return HttpResponseRedirect(reverse('portfolio:unconfirmed-email', args=[contact.id]))
         
@@ -102,12 +118,12 @@ def confirm_email(request, contact_id, token):
     if account_activation_token.check_token(contact, token):
         contact.email_confirmed = True
         contact.save()
-        messages = get_list_or_404(Message, contact=contact)
+        messages = Message.objects.filter(contact=contact, sent=False)
         for message in messages:
             message.send()
         return render(request, 'portfolio/confirmed_email.html')
     else:
-        raise Http404('Invalid token for user')
+        raise Http404('Invalid user/token combination')
 
 def unconfirmed_email(request, contact_id):
     contact = get_object_or_404(Contact, id=contact_id)
