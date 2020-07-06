@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+from django.utils.translation import gettext_lazy as _
+
 from dotenv import load_dotenv
 
 #Load environment variables from .env file
@@ -76,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 ROOT_URLCONF = 'homepage.urls'
@@ -128,7 +131,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = [
+    ('de', _('German')),
+    ('en', _('English')),
+    ('nl', _('Dutch'))
+]
+
+LOCALE_PATHS = [
+    f'{BASE_DIR}/locale',
+]
+
+LANGUAGE_COOKIE_NAME = 'djangolanguage'
 
 TIME_ZONE = 'UTC'
 

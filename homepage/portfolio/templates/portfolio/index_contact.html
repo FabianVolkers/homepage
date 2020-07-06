@@ -1,28 +1,29 @@
+{% load i18n %}
 <div id="contact-container">
     <div class="contact-section">
-        <p>Send me a message...</p>
+        <p>{% trans "Send me a message" %}...</p>
         <form action="{% url 'portfolio:contact' %}" method="post" id='contact-form'>
             {% csrf_token %}
-            <label for="email">Email Address</label><br>
+            <label for="email">{% trans "Email Address" %}</label><br>
             <input type="email" name="email" id="email" value="fabian.volkers+test@gmail.com">
             <br>
-            <label for="subject">Subject</label><br>
-            <input type="text" name="subject" id="subject" value="Subject">
+            <label for="subject">{% trans "Subject" %}</label><br>
+            <input type="text" name="subject" id="subject" value="{% trans "Subject" %}">
             <br>
-            <label for="message">Message</label><br>
-            <textarea name="message" id="message" value="Enter your message here..." form='contact-form'></textarea>
+            <label for="message">{% trans "Message" %}</label><br>
+            <textarea name="message" id="message" value="{% trans "Enter your message here" %}..." form='contact-form'></textarea>
             <br>
 
 
-            <input type="submit" value="Submit" id="contact-submit">
+            <input type="submit" value="{% trans "Submit" %}" id="contact-submit">
         </form>
     </div>
     <div class="contact-section" id="circle-section">
         <div class='circle-container'>
-        <p class="circle-text">...or find me on one of these platforms</p>
+        <p class="circle-text">...{% trans "or find me on one of these platforms" %}</p>
             <a href="#" target="_blank" class="deg0 circle-fa" id="twitter"><i
                     class="fab fa-twitter icon-fa"></i></a>
-            <a href="https://github.com/FabianVolkers" target="_blank" id="github" class="deg45 circle-fa"><i
+            <a href="https://github.com/FabianVolkers" id="github" class="deg45 circle-fa"><i
                     class="fab fa-github icon-fa"></i></a>
             <a href="#" target="_blank" id="free-code-camp"
                 class="deg90 circle-fa"><i class="fab fa-free-code-camp icon-fa"></i></a>
@@ -31,9 +32,9 @@
                     class="fab fa-soundcloud icon-fa"></i></a>
             <a href="#" target="_blank" id="youtube"
                 class="deg225 circle-fa"><i class="fab fa-youtube icon-fa"></i></a>
-            <a href="https://www.linkedin.com/in/fabianvolkers/" target="_blank" id="linkedin"
+            <a href="https://www.linkedin.com/in/fabianvolkers/" id="linkedin"
                 class="deg270 circle-fa"><i class="fab fa-linkedin-in icon-fa"></i></a>
-            <a href="https://blog.fabianvolkers.com" target="_blank" id="blog" class="deg315 circle-fa"><i
+            <a href="https://blog.fabianvolkers.com" id="blog" class="deg315 circle-fa"><i
                     class="fas fa-blog"></i></a>
 
         </div>

@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-07-05 19:42+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: homepage/settings.py:137
+msgid "German"
+msgstr "Duits"
+
+#: homepage/settings.py:138
+msgid "English"
+msgstr "Engels"
+
+#: homepage/settings.py:139
+msgid "Dutch"
+msgstr "Nederlands"
+
+#: portfolio/templates/portfolio/index_contact.html:4
+msgid "Send me a message"
+msgstr "Stuur me een Bericht"
+
+#: portfolio/templates/portfolio/index_contact.html:7
+msgid "Email Address"
+msgstr "Email adres"
+
+#: portfolio/templates/portfolio/index_contact.html:10
+#: portfolio/templates/portfolio/index_contact.html:11
+msgid "Subject"
+msgstr "Betref"
+
+#: portfolio/templates/portfolio/index_contact.html:13
+msgid "Message"
+msgstr "Bericht"
+
+#: portfolio/templates/portfolio/index_contact.html:14
+msgid "Enter your message here"
+msgstr "Typ hier je bericht"
+
+#: portfolio/templates/portfolio/index_contact.html:18
+msgid "Submit"
+msgstr "Zenden"
+
+#: portfolio/templates/portfolio/index_contact.html:23
+msgid "or find me on one of these platforms"
+msgstr "of vind me op een van deze sites"
