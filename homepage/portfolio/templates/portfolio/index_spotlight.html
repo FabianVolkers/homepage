@@ -1,9 +1,10 @@
 <div class="spotlight-container">
     {% for spotlight in spotlights %}
-    <a href="{% url spotlight.detail_view spotlight.slug %}">
-    <img src='{{ MEDIA_URL }}/{{ spotlight.image }}' class="spotlight-img">
-    </a>
+    
+    <img src='{{ MEDIA_URL }}/{{ spotlight.common.image }}' draggable="false" class="spotlight-img" alt-text="{{ spotlight.image_alttext }}">
+    <a href="{% url spotlight.common.detail_view spotlight.slug %}">
     <span class="spotlight-caption">{{ spotlight.name }}</span>
+    </a>
     {% endfor %}
     <span class="button-left" onclick="plusDivs(-1)">&#10094;</span>
     <span class="button-right" onclick="plusDivs(+1)">&#10095;</span>

@@ -5,7 +5,7 @@
 <section id="{{ section.slug }}" style="grid-row: {{ forloop.counter }}">
     <h2>{{ section.name }}</h2>
     <p>{{ section.description }}</p>
-    {% include section.section_type.template_name with entries=section.baseentry_set.all  %}
+    {% include section.common.section_type.template_name with entries=section.baseentry_set.all  %}
 </section>
 {% endif %}
 {% endfor %}

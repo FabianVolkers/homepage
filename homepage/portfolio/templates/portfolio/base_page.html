@@ -1,17 +1,20 @@
 <!DOCTYPE html>
-
-<html lang="en">
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_language_info for LANGUAGE_CODE as lang %}
+<html lang="{{ LANGUAGE_CODE }}">
 
 <head>
     <meta charset="utf-8">
-
+    <meta name="viewport" content="width=device-width">
+    <link rel="shortcut icon" type="image/png" href="{{MEDIA_URL}}/favicon.ico" />
     <title>{% block title %}Fabian Volkers{% endblock title %}</title>
     <meta name="description" content="{% block description %}Fabian Volkers' Portfolio{% endblock description %}">
     <meta name="author" content="Fabian Volkers">
 
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'portfolio/style.css' %}">
-    
+
     <script src="https://kit.fontawesome.com/0d7dc3f746.js" crossorigin="anonymous"></script>
 </head>
 
@@ -26,54 +29,87 @@
             <div class="left-menu">
                 <a href="/">Home</a>
                 {% for navlink in navlinks %}
+                {% if navlink.link_for == 'page'%}
+                <a href="{% url navlink.page.view_name %}">{{ navlink.page.name }}</a>
+                {% else %}
                 <a href="{{ navlink.url }}">{{ navlink.name }}</a>
+                {% endif %}
                 {% endfor %}
             </div>
             <a href="/" class="logo">Fabian Volkers</a>
+            <input type="checkbox" id="lang-toggle">
+            <label for="lang-toggle" class="lang-toggle" id="lang-toggle-btn-desktop">
+                <a>{{ lang.name_translated }}</a>
+            </label>
+            <label for="lang-toggle" class="lang-toggle lang-toggle-btn" id="lang-toggle-btn-mobile">
+                <a>{{ LANGUAGE_CODE }}</a>
+            </label>
+            <div class="right-menu">
+
+                
+                    <ul>
+                        <li>
+                            <label for="lang-toggle" class="lang-toggle">
+                                <a>{{ lang.name_translated }}</a>
+                            </label>
+                        </li>
+                        {% get_available_languages as LANGUAGES %}
+                        {% for language in LANGUAGES%}
+                        {% if language.1 != lang.name_translated %}
+                        {% get_language_info for language.0 as dropdown_lang %}
+                        <li>
+                            <a
+                                href="{% url 'portfolio:set-lang' %}?lang={{ language.0 }}&next={{ request.path }}">{{ dropdown_lang.name_local }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                
+            </div>
         </nav>
     </div>
     {% endblock navbar %}
     <div id='content'>
-    {% block content %}
-    {% lorem %}
-    {% endblock content %}
+        {% block content %}
+        {% lorem %}
+        {% endblock content %}
     </div>
     {% block footer %}
     <footer>
-    <div id='footer-left'>
-    <h4>Sitemap</h4>
-    <ul>
-    {% for section in sections %}
-    <li>
-    <a href="{{ section.url }}">{{ section.name }}</a>
-    </li>
-    {% endfor %}
-    </ul>
-    </div>
-    <div id='footer-center'>
-    <h4>Legal</h4>
-    <ul>
-    <li>
-    <a href={% url 'portfolio:imprint' %}>Imprint</a>
-    </li>
-    <li>
-    <a href={% url 'portfolio:privacy' %}>Privacy</a>
-    </li>
-    </ul>
-    </div>
-    <div id='footer-right'>
-    <h4>Links</h4>
-    <ul>
-    {% for link in footerlinks %}
-    <li>
-    <a href="{{ link.url }}"><i class="{{ link.icon.icon_class }}"></i>{{ link.name }}</a>
-    </li>
-    {% endfor %}
-    </ul>
-    </div>
+        <div id='footer-left'>
+            <h4>Sitemap</h4>
+            <ul>
+                {% for section in sections %}
+                <li>
+                    <a href="{{ section.common.url }}">{{ section.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id='footer-center'>
+            <h4>Legal</h4>
+            <ul>
+                <li>
+                    <a href={% url 'portfolio:imprint' %}>Imprint</a>
+                </li>
+                <li>
+                    <a href={% url 'portfolio:privacy' %}>Privacy</a>
+                </li>
+            </ul>
+        </div>
+        <div id='footer-right'>
+            <h4>Links</h4>
+            <ul>
+                {% for link in footerlinks %}
+                <li>
+                    <a href="{{ link.url }}"><i class="{{ link.icon.icon_class }}"></i>{{ link.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
     </footer>
     {% endblock footer %}
-<script src="{% static 'portfolio/script.js' %}" crossorigin="anonymous"></script>
+    <script src="{% static 'portfolio/script.js' %}" crossorigin="anonymous"></script>
 </body>
 
 </html>

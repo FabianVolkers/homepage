@@ -1,13 +1,13 @@
 <div class="collection-container">
-    {% for entry in entries %}
+    {% for item in entries %}
 
-    <div id="{{ entry.slug }}" class="collection-entry {% cycle 'column-1' 'column-2' 'column-3' %}">
-        <a href="{% url entry.detail_view entry.slug %}">
-            <h4>{{ entry.name }}</h4>
+    <div id="{{ item.slug }}" class="collection-item {% cycle 'column-1' 'column-2' 'column-3' %}">
+        <a href="{% url item.common.detail_view item.slug %}">
+            <h4>{{ item.name }}</h4>
         </a>
         <div>
-            <a href="{% url entry.detail_view entry.slug %}">
-                <img src="{{ MEDIA_URL }}/{{ entry.image }}">
+            <a href="{% url item.common.detail_view item.slug %}">
+                <img src="{{ MEDIA_URL }}/{{ item.common.image }}">
                 <span></span>
             </a>
         </div>
