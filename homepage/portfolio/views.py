@@ -5,35 +5,19 @@ from django.views import generic
 from django.conf import settings
 from django.utils import translation
 from django.db.models import Q
+from django.views.generic.base import ContextMixin
 #from django.contrib.auth.tokens import default_token_generator
 
-from .models import Message, Contact, Section, BaseEntry, NavLink, FooterLink, SectionCommon
+from .models import Message, Contact, Section, CollectionItem,  SectionCommon, NavLink, FooterLink
 from .tokens import account_activation_token
 
+""" 
+TODO: 
+- replace contact views with User Notification view with message and action
 
-# Base Views
+"""
 
-class BaseDetailView(generic.DetailView):
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
-        context['sections'] = Section.objects.order_by('position')
-        context['navlinks'] = NavLink.objects.all()
-        context['footerlinks'] = FooterLink.objects.order_by('position')
-        return context
-
-class BaseListView(generic.ListView):
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
-        context['sections'] = Section.objects.order_by('position')
-        context['navlinks'] = NavLink.objects.order_by('position')
-        context['footerlinks'] = FooterLink.objects.order_by('position')
-        return context
-
-class BaseTemplateView(generic.TemplateView):
+class BaseContext(ContextMixin):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
@@ -43,15 +27,13 @@ class BaseTemplateView(generic.TemplateView):
             context['sections'] = Section.objects.filter(
                 lang=translation.get_language()
                 ).select_related('common').exclude(
-                    common__isnull=True,
-                    translations_group__isnull=True
+                    common__isnull=True
                     )
         else:
             sections = Section.objects.filter(
                 lang=translation.get_language()
                 ).select_related('common').exclude(
-                    common__isnull=True,
-                    translations_group__isnull=True
+                    common__isnull=True
                     )
 
             fallback = Section.objects.exclude(
@@ -59,7 +41,7 @@ class BaseTemplateView(generic.TemplateView):
                 ).filter(
                     lang=settings.LANGUAGE_CODE
                     ).select_related('common').exclude(
-                        common__isnull=True, translations_group__isnull=True
+                        common__isnull=True
                         )
             
             context['sections'] = fallback.union(sections).order_by('common__position')
@@ -68,21 +50,31 @@ class BaseTemplateView(generic.TemplateView):
         context['footerlinks'] = FooterLink.objects.order_by('position')
 
         return context  
+# Base Views
+
+class BaseDetailView(BaseContext, generic.DetailView):
+    pass
+
+class BaseListView(BaseContext, generic.ListView):
+    pass
+
+class BaseTemplateView(BaseContext, generic.TemplateView):
+    pass
 
 
 """ Detail Views """ 
 
 class CollectionView(BaseDetailView):
-    model = BaseEntry
+    model = CollectionItem
     template_name = 'portfolio/collection.html'
 
 class PhotoView(BaseDetailView):
-    model = BaseEntry
+    model = CollectionItem
     template_name = 'portfolio/photo.html'
 
 class ProjectDetailView(BaseDetailView):
-    model = BaseEntry
-    template_name = 'portfolio/project.html'
+    model = CollectionItem
+    template_name = 'portfolio/detail_view.html'
 
 
 """ List Views """
@@ -91,12 +83,12 @@ class MessageView(generic.ListView):
     template_name = 'portfolio/'
 
 class PhotoListView(BaseListView):
-    queryset = BaseEntry.objects.filter(parent_section='3')
+    queryset = CollectionItem.objects.filter(common__parent_section='3')
     context_object_name = 'photos'
     template_name = 'portfolio/photos.html'
 
 class ProjectListView(BaseListView):
-    queryset = BaseEntry.objects.filter(parent_section='2')
+    queryset = CollectionItem.objects.filter(common__parent_section='2')
     context_object_name = 'projects'
     template_name = 'portfolio/projects.html'
 
@@ -113,7 +105,7 @@ class IndexView(BaseTemplateView):
 
         context = super().get_context_data(**kwargs)
 
-        context['spotlights'] = BaseEntry.objects.filter(spotlight=True)
+        context['spotlights'] = CollectionItem.objects.filter(common__spotlight=True)
         return context 
 
 class PrivacyView(BaseTemplateView):
