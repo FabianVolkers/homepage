@@ -59,6 +59,18 @@ class NavLink(Link):
     #link_positions = range(1, len(NavLink.objects.all()))
     position = models.IntegerField(null=True, choices=navlink_positions, unique=True)
 
+class TranslationsGroup(models.Model):
+     name = models.CharField(max_length=24)
+
+     def __str__(self):
+         return self.name
+
+class Translatable(models.Model):
+    translations_group = models.ForeignKey(TranslationsGroup, on_delete=models.SET_NULL, null=True)
+    lang = models.CharField(max_length=5, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
+    class Meta:                                                             
+        abstract = True
+    
 class Page(models.Model):
     name = models.CharField(max_length=24)
     template_name = models.CharField(max_length=64)
@@ -73,15 +85,22 @@ class SectionType(models.Model):
 
     def __str__(self):
         return self.name
-class Section(models.Model):
-    #section_positions = range(1, len(Section.objects.all()))
-    name = models.CharField(max_length=64)
-    slug = models.SlugField(editable=False)
-    description = models.TextField(null=True, blank=True)
+
+class SectionCommon(models.Model):
+    friendly_name = models.CharField(max_length=64)
     section_type = models.ForeignKey(SectionType, on_delete=models.SET_NULL, null=True)
     position = models.IntegerField(null=True, choices=section_postitions, unique=True)
     nav_bar_link = models.BooleanField(default=True)
     nav_link = models.ForeignKey(NavLink, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.friendly_name
+class Section(Translatable):
+    #section_positions = range(1, len(Section.objects.all()))
+    name = models.CharField(max_length=64)
+    slug = models.SlugField(editable=False)
+    description = models.TextField(null=True, blank=True)
+    common = models.ForeignKey(SectionCommon, related_name='sections', on_delete=models.CASCADE, null=True)
     
 
     def __str__(self):
@@ -94,24 +113,24 @@ class Section(models.Model):
             self.position = self.section_type.default_position """
 
         self.slug = generate_slug(self.name)
-        if self.nav_bar_link:
+        if self.common.nav_bar_link:
             try:
                 NavLink.objects.get(name=self.slug)
             except models.ObjectDoesNotExist:
                 position = len(NavLink.objects.all())
                 navlink = NavLink(name=self.slug, url=f'/#{self.slug}', position=position)
                 navlink.save()
-                self.nav_link = navlink
+                self.common.nav_link = navlink
         super().save()
     
-class BaseEntry(models.Model):
+class BaseEntry(Translatable):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, editable=False)
     description = models.TextField()
     image = models.ImageField(upload_to='images')
     created = models.DateTimeField()
     spotlight = models.BooleanField()
-    section = models.ForeignKey(Section, on_delete=models.SET_NULL, null=True)
+    parent_section = models.ForeignKey(Section, on_delete=models.SET_NULL, null=True)
     detail_view = models.CharField(max_length=64, default='portfolio.views.BaseEntryView', choices=views)
 
     def __str__(self):
@@ -164,6 +183,9 @@ class Photo(models.Model):
         self.slug = generate_slug(self.name)
         super().save()
  """
+
+
+
 class Contact(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     email_address = models.EmailField()
