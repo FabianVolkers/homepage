@@ -24,10 +24,41 @@ TODO:
 
 """
 
+"""
+Helper function for filtering querysets for current language,
+falling back to default language if translations does not exist
+"""
+
+
+def filter_translations(queryset, lang):
+
+    if lang == settings.LANGUAGE_CODE:
+
+        queryset = queryset.filter(lang=lang)
+
+    else:
+        translations = queryset.filter(lang=lang)
+
+        # Fallback to default language
+        fallback = queryset.exclude(
+            common__id__in=translations.values('common')
+        ).filter(
+            lang=settings.LANGUAGE_CODE
+        )
+
+        queryset = fallback.union(translations)
+
+    return queryset
+
+
+"""
+Base Context, providing navigation and footer links for all pages.
+"""
+
 
 class BaseContext(ContextMixin):
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
+
         context = super().get_context_data(**kwargs)
 
         navlinks = NavLink.objects.select_related('page').order_by(
@@ -41,122 +72,23 @@ class BaseContext(ContextMixin):
         context['footerlinks'] = FooterLink.objects.order_by('position')
 
         return context
-# Base Views
 
 
 """
-TODO:
- - Refactor Translatable mixins to avoid duplication
-"""
-""" 
+Generic Views for Page, Collection, and Detail pages.
+#####################################################
 
-class TranslatableDetailMixin(SingleObjectMixin):
-    def get_queryset(self):
+Page View consists of Sections defined in the database. 
+(model: Page, PageCommon)
 
-        lang = self.request.COOKIES[settings.LANGUAGE_COOKIE_NAME]
-        print(self.request.path_info)
-        # Fallback to default language
-        if len(self.model.objects.filter(lang=lang)) == 0:
-            lang = settings.LANGUAGE_CODE
+Collection View consists of list view of Collection Items, also defined in the
+database (model: CollectionItem, CollectionItemCommon)
 
-        return super().get_queryset().filter(
-            lang=lang
-        )
-
-
-class TranslatableListMixin(MultipleObjectMixin):
-    def get_queryset(self):
-
-        lang = self.request.COOKIES[settings.LANGUAGE_COOKIE_NAME]
-
-        # Fallback to default language
-        print(self.request.path_info)
-         for key in self.request.__dict__:
-    print(f"{key} = {self.request.__dict__[key]}")
-    try:
-        for key_ in self.__dict__[key].__dict__:
-            print(f"\t{key_} = {self.__dict__[key_]}")
-    except:
-        continue 
-
-        if len(self.model.objects.filter(lang=lang)) == 0:
-            lang = settings.LANGUAGE_CODE
-
-        return super().get_queryset().filter(
-            lang=lang
-        )
- """
-# class CollectionItemTypeMixin()
-
+Detail View consists of a single Collection Item
 
 """
-Base Views for each type combining Mixins and Django's generic class based views.
-"""
 
-""" 
-class BaseDetailView(BaseContext, TranslatableDetailMixin, generic.DetailView):
-    pass
-
-
-class BaseListView(BaseContext, TranslatableListMixin, generic.ListView):
-    pass
- """
-
-
-class BaseTemplateView(BaseContext, generic.TemplateView):
-    pass
-
-
-""" 
-class BasePageMixin(MultipleObjectMixin):
-
-    pass
- """
-
-""" Detail Views """
-
-
-""" class CollectionView(BaseDetailView):
-    model = CollectionItem
-    template_name = 'portfolio/collection.html'
-
-
-
-class PhotoView(BaseDetailView):
-    model = CollectionItem
-    template_name = 'portfolio/photo.html'
-
-
-class ProjectDetailView(BaseDetailView):
-    model = CollectionItem
-    template_name = 'portfolio/detail_view.html'
- """
-
-""" List Views """
-
-""" 
-class MessageView(generic.ListView):
-    model = Message
-    template_name = 'portfolio/'
-
-
-class PhotoListView(BaseListView):
-    queryset = CollectionItem.objects.filter(common__parent_section='3')
-    context_object_name = 'photos'
-    template_name = 'portfolio/photos.html'
-
-
-class ProjectListView(BaseListView):
-    queryset = CollectionItem.objects.filter(common__parent_section='2')
-    context_object_name = 'projects'
-    template_name = 'portfolio/projects.html' """
-
-
-""" Template Views """
-
-
-class ImprintView(BaseTemplateView):
-    template_name = 'portfolio/imprint.html'
+"""TODO: access args from url conf instead of parsing path"""
 
 
 class PageView(BaseContext, generic.ListView):
@@ -185,7 +117,10 @@ class PageView(BaseContext, generic.ListView):
         print(context['pages'].values())
 
         spotlights = CollectionItem.objects.filter(
-            common__spotlight=True).select_related('common__parent_section').prefetch_related('common__parent_section__sections').filter(common__parent_section__id__in=sections)
+            common__spotlight=True).select_related(
+                'common__parent_section').prefetch_related(
+                    'common__parent_section__sections').filter(
+                        common__parent_section__id__in=sections)
 
         context['spotlights'] = filter_translations(spotlights, lang)
         print(context['spotlights'].values())
@@ -285,8 +220,40 @@ class DetailView(BaseContext, generic.ListView):
         return queryset
 
 
+"""
+A few extra views with individual templates that don't fit the current
+Page > Section Setup (can be refactored to work as such)
+
+The names are fairly self-explanatory.
+
+"""
+
+
+class BaseTemplateView(BaseContext, generic.TemplateView):
+    pass
+
+
+class ImprintView(BaseTemplateView):
+    template_name = 'portfolio/imprint.html'
+
+
 class PrivacyView(BaseTemplateView):
     template_name = 'portfolio/privacy.html'
+
+
+"""
+Contact views, for contact form actions and email confirmation.
+
+Needs refactoring into single UserResponse view, then based on path
+actions get taken
+
+Needed paths:
+contact/confirm-email
+contact/email-confirmed
+contact/thanks
+contact/delete
+contact/messages
+"""
 
 
 def contact(request):
@@ -303,14 +270,24 @@ def contact(request):
 
     # try:
 
-    message = Message(contact=contact, subject=subject, content=content)
+    message = Message(
+        contact=contact,
+        subject=subject,
+        content=content)
+
     message.save()
 
     if message.contact.email_confirmed:
         message.send()
-        return HttpResponseRedirect(reverse('portfolio:contact-thanks', args=[message.id]))
+        return HttpResponseRedirect(
+            reverse(
+                'portfolio:contact-thanks',
+                args=[message.id]))
     else:
-        return HttpResponseRedirect(reverse('portfolio:unconfirmed-email', args=[contact.id]))
+        return HttpResponseRedirect(
+            reverse(
+                'portfolio:unconfirmed-email',
+                args=[contact.id]))
 
     # except:
     #    return HttpResponseRedirect(reverse('portfolio:index'))
@@ -381,88 +358,3 @@ def check_for_language(lang_code):
         if language[0] == lang_code:
             supported_lang = True
     return supported_lang
-
-
-"""
-Helper function for filtering querysets for current language,
-falling back to default language if translations does not exist
-"""
-
-
-def filter_translations(queryset, lang):
-
-    if lang == settings.LANGUAGE_CODE:
-
-        queryset = queryset.filter(lang=lang)
-
-    else:
-        translations = queryset.filter(lang=lang)
-
-        # Fallback to default language
-        fallback = queryset.exclude(
-            common__id__in=translations.values('common')
-        ).filter(
-            lang=settings.LANGUAGE_CODE
-        )
-
-        queryset = fallback.union(translations)
-
-    return queryset
-
-
-""" class IndexView(BaseListView):
-    model = Section
-    context_object_name = 'sections'
-
-    template_name = 'portfolio/index.html'
-
-    def get_context_data(self, **kwargs):
-
-        context = super().get_context_data(**kwargs)
-
-        context['spotlights'] = CollectionItem.objects.filter(
-            common__spotlight=True)
-        return context
-
-
-    def get_queryset(self):
-
-        lang = self.request.COOKIES[settings.LANGUAGE_COOKIE_NAME]
-        page = self.request.path.replace('/', '')
-        if page == '':
-            page = 'home'
-        print(lang, page)
-        if lang == settings.LANGUAGE_CODE:
-            queryset = Section.objects.filter(
-                lang=lang,
-                ).select_related('common').filter(
-                    common__isnull=False,
-                    common__page__pages__slug=page
-                    )
-        else:
-            sections = Section.objects.filter(
-                lang=lang
-                ).select_related('common').filter(
-                    common__isnull=False,
-                    # common__page__slug=page
-                    )
-
-            fallback = Section.objects.exclude(
-                common__id__in=sections.values('common')
-                ).filter(
-                    lang=settings.LANGUAGE_CODE
-                    ).select_related('common').filter(
-                    common__isnull=False,
-                    # common__page__slug=page
-                    )
-            queryset = fallback.union(sections).order_by('common__position')
-
-        # Fallback to default language
-        print(self.request.path_info)
-
-
-        if len(self.model.objects.filter(lang=lang)) == 0:
-            lang = settings.LANGUAGE_CODE
-
-        return queryset
- """
