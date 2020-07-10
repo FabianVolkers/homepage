@@ -1,12 +1,14 @@
 {% extends 'portfolio/base_page.html' %}
 {% block content %}
 {% for section in sections %}
-{% if section.slug != 'spotlight' or section.slug == 'spotlight' %}
+
 <section id="{{ section.slug }}" style="grid-row: {{ forloop.counter }}">
     <h2>{{ section.name }}</h2>
+    {% autoescape off %}
     <p>{{ section.description }}</p>
+    {% endautoescape %}
     {% include section.common.section_type.template_name with section=section %}
 </section>
-{% endif %}
+
 {% endfor %}
 {% endblock content %}
