@@ -1,16 +1,26 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <div class="spotlight-container">
-    {% for spotlight in spotlights %}
-    
-    <img src='{{ MEDIA_URL }}/{{ spotlight.common.image }}' draggable="false" class="spotlight-img" alt-text="{{ spotlight.image_alttext }}">
-    <a href="{% url spotlight.common.detail_view spotlight.slug %}">
-    <span class="spotlight-caption">{{ spotlight.name }}</span>
+    {% for spotlight in collectionitems %}
+    {% if spotlight.common.spotlight == True %}
+    <img src='{{ MEDIA_URL }}/{{ spotlight.common.image }}' draggable="false" class="spotlight-img"
+        alt-text="{{ spotlight.image_alttext }}">
+    {% for item_section in sections %}
+    {% if item_section.common.id == spotlight.common.parent_section.id %}
+    <a href="{% url spotlight.common.detail_view item_section.slug spotlight.slug %}">
+        <span class="spotlight-caption">{{ spotlight.name }}</span>
     </a>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
     {% endfor %}
     <span class="button-left" onclick="plusDivs(-1)">&#10094;</span>
     <span class="button-right" onclick="plusDivs(+1)">&#10095;</span>
     <div class="spotlight-indicator-container">
-    {% for spotlight in spotlights %}
-    <span class="indicator-transparent spotlight-indicator" onclick="currentDiv({{ forloop.counter }})"></span>
-    {% endfor %}
+        {% for spotlight in collectionitems %}
+        {% if spotlight.common.spotlight == True %}
+        <span class="indicator-transparent spotlight-indicator" onclick="currentDiv({{ forloop.counter }})"></span>
+        {% endif %}
+        {% endfor %}
     </div>
 </div>

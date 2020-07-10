@@ -29,11 +29,16 @@
             <div class="left-menu">
                 <a href="/">Home</a>
                 {% for navlink in navlinks %}
-                {% if navlink.link_for == 'page'%}
-                <a href="{% url navlink.page.view_name %}">{{ navlink.page.name }}</a>
-                {% else %}
-                <a href="{{ navlink.url }}">{{ navlink.name }}</a>
-                {% endif %}
+                    {% if navlink.link_for == 'page'%}
+                        {% for page in pages %}
+                            {% if page.common.id == navlink.page.id %}
+                                <a href="{% url navlink.page.page_type.view_name page.slug %}">{{ page.name }}</a>
+                            {% endif %}
+                        {% endfor %}
+                
+                    {% else %}
+                        <a href="{{ navlink.url }}">{{ navlink.name }}</a>
+                    {% endif %}
                 {% endfor %}
             </div>
             <a href="/" class="logo">Fabian Volkers</a>

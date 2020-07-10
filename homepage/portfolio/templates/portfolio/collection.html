@@ -1,3 +1,11 @@
-{% for entry in selection.baseentry_set.get() %}
+{% extends 'portfolio/base_page.html' %}
+{% block title %}{{ section.name }}{% endblock title %}
+{% block description %}{{ section.name }}{% endblock description %}
 
-{% endfor %}
+{% block content %}
+<h1>{{ section.name }}</h1>
+{% include 'portfolio/index_collection.html' with section=section%}
+{% endblock content %}
+
+
+

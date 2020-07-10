@@ -1,16 +1,17 @@
 <div class="collection-container">
-    {% for item in entries %}
-
+    {% for item in collectionitems %}
+    {% if item.common.parent_section == section.common %}
     <div id="{{ item.slug }}" class="collection-item {% cycle 'column-1' 'column-2' 'column-3' %}">
-        <a href="{% url item.common.detail_view item.slug %}">
+        <a href="{% url 'portfolio:detail' section.slug item.slug %}">
             <h4>{{ item.name }}</h4>
         </a>
         <div>
-            <a href="{% url item.common.detail_view item.slug %}">
+            <a href="{% url item.common.detail_view section.detail_slug item.slug %}">
                 <img src="{{ MEDIA_URL }}/{{ item.common.image }}">
                 <span></span>
             </a>
         </div>
     </div>
+    {% endif %}
     {% endfor %}
 </div>

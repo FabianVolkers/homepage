@@ -1,0 +1,16 @@
+{% extends 'portfolio/base_page.html' %}
+{% block title %}{{ collectionitem.name }}{% endblock title %}
+{% block description %}{{ collectionitem.name }}{% endblock description %}
+
+{% block content %}
+<h1>{{ collectionitem.name }}</h1>
+<img src="{{ MEDIA_URL }}/{{ collectionitem.common.image }}" draggable="false" alt-text="{{ collectionitem.image_alttext }}">
+<div>
+{% autoescape off %}
+{{ collectionitem.description }}
+{% endautoescape %}
+</div>
+{% endblock content %}
+
+
+
