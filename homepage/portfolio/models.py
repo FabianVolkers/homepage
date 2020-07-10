@@ -99,6 +99,9 @@ class PageCommon(models.Model):
     template_name = models.CharField(max_length=64)
     page_type = models.ForeignKey(
         PageType, on_delete=models.SET_NULL, null=True, blank=True)
+    footer_link = models.BooleanField(default=True)
+    footer_position = models.IntegerField(
+        unique=True, null=True, blank=True, choices=[(i, i) for i in range(10)])
 
     class Meta:
         verbose_name = _('Page')
@@ -163,7 +166,7 @@ class Section(AbstractTranslatable):
     #section_positions = range(1, len(Section.objects.all()))
     name = models.CharField(max_length=64)
     slug = models.SlugField()
-    detail_slug = models.SlugField()
+    detail_slug = models.SlugField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     common = models.ForeignKey(
         SectionCommon, related_name='sections', on_delete=models.CASCADE, null=True)
