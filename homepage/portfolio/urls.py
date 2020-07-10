@@ -6,7 +6,8 @@ from . import views
 
 app_name = 'portfolio'
 urlpatterns = [
-    path('', views.PageView.as_view(), name='page'),
+    re_path(r'^(?!(admin|media|projects|photography|lang))(?P<page_name>[\w|-]{0,}$)',
+            views.PageView.as_view(), name='page'),
     path('contact', views.contact, name='contact'),
     path('contact/thanks/<int:message_id>',
          views.contacted, name='contact-thanks'),
@@ -22,12 +23,12 @@ urlpatterns = [
     # path('photography', views.CollectionView.as_view(),
     #     name='photography-collection'),
     #path('photo/<slug:slug>', views.DetailView.as_view(), name='photo-detail'),
-    path('imprint', views.ImprintView.as_view(), name='imprint'),
-    path('privacy', views.PrivacyView.as_view(), name='privacy'),
+    #path('imprint', views.ImprintView.as_view(), name='imprint'),
+    #path('privacy', views.PrivacyView.as_view(), name='privacy'),
     path('lang', views.set_language, name='set-lang'),
-    re_path(r'^(?![admin|media])(?P<section_slug>[\w|-]+$)',
+    re_path(r'^(?!(admin|media|privacy|imprint|lang]))(?P<section_slug>[\w|-]+$)',
             views.CollectionView.as_view(), name='collection'),
-    re_path(r'^(?![admin|media])(?P<section_slug>[\w|-]+)/(?P<collectionitem_slug>[\w|-]+)',
+    re_path(r'^(?![admin|media|lang])(?P<section_slug>[\w|-]+)/(?P<collectionitem_slug>[\w|-]+)',
             views.DetailView.as_view(), name='detail'),
 
 ]
