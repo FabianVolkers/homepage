@@ -11,18 +11,20 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import random
 
 from django.utils.translation import gettext_lazy as _
 
 from dotenv import load_dotenv
 
-#Load environment variables from .env file
+# Load environment variables from .env file
 load_dotenv()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-DEV_MODE = os.getenv('DEV_MODE')
+DEV_MODE = os.getenv('DEV_MODE', False)
 
 if DEV_MODE:
     PROTO = 'http'
@@ -43,18 +45,19 @@ else:
     MEDIA_ROOT = '/var/www/media'
 
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', ''.join(random.SystemRandom().choice(
+    'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DEV_MODE
 
 ALLOWED_HOSTS = [
-    HOST
+    HOST,
+    '0.0.0.0'
 ]
 
 
@@ -105,8 +108,6 @@ WSGI_APPLICATION = 'homepage.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-
 
 
 # Password validation
