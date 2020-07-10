@@ -13,28 +13,33 @@ TODO:
 
 """
 
+
 class SlugAdmin(admin.ModelAdmin):
     prepopulated_fiels = {
         "slug": ("name",)
-        }
+    }
+
 
 class NavLinkInline(admin.TabularInline):
     model = NavLink
     readonly_fields = ('url',)
 
+
 class FooterLinkInline(admin.TabularInline):
     model = FooterLink
     readonly_fields = ('url',)
+
 
 class LinkAdmin(admin.ModelAdmin):
     inlines = [
         NavLinkInline,
         FooterLinkInline
     ]
+
+
 class TranslationInline(admin.StackedInline):
     max_num = len(settings.LANGUAGES)
-    
-    
+
     """ def get_prepopulated_fields(self, request, obj=None):
         translated = self.model.objects.filter(translations_group__id=obj.id)
         langs = settings.LANGUAGES
@@ -43,32 +48,39 @@ class TranslationInline(admin.StackedInline):
             del langs[idx]
         
         return {"lang": next(iter(langs))} """
-    
+
+
 class SectionCommonInline(admin.TabularInline):
-    model = SectionCommon 
+    model = SectionCommon
+
+
 class SectionInline(TranslationInline):
     model = Section
+
 
 class SectionCommonAdmin(SlugAdmin):
     inlines = [
         SectionInline
     ]
 
+
 class CollectionItemAdmin(admin.ModelAdmin):
     model = CollectionItem
+
     list_display = ('name', 'lang')
+
 
 class CollectionItemInline(TranslationInline):
     model = CollectionItem
 
 
 class CollectionItemCommonAdmin(SlugAdmin):
-
+    model = CollectionItemCommon
+    #readonly_fields = ('detail_view',)
     inlines = [
         CollectionItemInline
     ]
 
-    
 
 class TranslationAdmin(admin.ModelAdmin):
 
@@ -76,6 +88,7 @@ class TranslationAdmin(admin.ModelAdmin):
         SectionInline,
         CollectionItemInline
     ]
+
     def get_formsets_with_inlines(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
             if obj != None and inline.model.objects.filter(translations_group__id=obj.id, translations_group__isnull=False).count() > 0:
@@ -83,10 +96,10 @@ class TranslationAdmin(admin.ModelAdmin):
             elif obj == None:
                 yield inline.get_formset(request, obj), inline
 
+
 class PageAdmin(SlugAdmin):
-    readonly_fields = ('view_name',)
-    fields = ('name', 'template_name', 'slug', 'page_type', 'overwrite_view_name', 'view_name')
-    
+    pass
+
 
 """ admin.site.register(Project)
 admin.site.register(Collection)
@@ -103,6 +116,7 @@ admin.site.register(LinkEdit, LinkAdmin)
 admin.site.register(Icon)
 admin.site.register(PageType)
 admin.site.register(Page, PageAdmin)
+admin.site.register(PageCommon)
 #admin.site.register(TranslationsGroup, TranslationAdmin)
 admin.site.register(SectionCommon, SectionCommonAdmin)
 admin.site.register(CollectionItemCommon, CollectionItemCommonAdmin)
