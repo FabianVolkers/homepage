@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1>{{ section.name }}</h1>
-{% include 'portfolio/index_collection.html' with section=section%}
+{% include section.common.section_type.template_name with section=section%}
 {% endblock content %}
 
 
