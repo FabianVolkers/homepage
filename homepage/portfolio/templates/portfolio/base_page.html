@@ -84,10 +84,12 @@
         <div id='footer-left'>
             <h4>Sitemap</h4>
             <ul>
-                {% for section in sections %}
+                {% for page in pages %}
+                {% if page.common.footer_link == True%}
                 <li>
-                    <a href="{{ section.common.url }}">{{ section.name }}</a>
+                    <a href="{% url page.common.page_type.view_name page.slug %}">{{ page.name }}</a>
                 </li>
+                {% endif %}
                 {% endfor %}
             </ul>
         </div>
@@ -95,10 +97,10 @@
             <h4>Legal</h4>
             <ul>
                 <li>
-                    <a href={% url 'portfolio:imprint' %}>Imprint</a>
+                    <a href={% url 'portfolio:page' 'imprint' %}>Imprint</a>
                 </li>
                 <li>
-                    <a href={% url 'portfolio:privacy' %}>Privacy</a>
+                    <a href={% url 'portfolio:page' 'privacy' %}>Privacy</a>
                 </li>
             </ul>
         </div>
