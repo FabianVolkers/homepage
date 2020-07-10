@@ -24,32 +24,6 @@ TODO:
 
 """
 
-"""
-Helper function for filtering querysets for current language,
-falling back to default language if translations does not exist
-"""
-
-
-def filter_translations(queryset, lang):
-
-    if lang == settings.LANGUAGE_CODE:
-
-        queryset = queryset.filter(lang=lang)
-
-    else:
-        translations = queryset.filter(lang=lang)
-
-        # Fallback to default language
-        fallback = queryset.exclude(
-            common__id__in=translations.values('common')
-        ).filter(
-            lang=settings.LANGUAGE_CODE
-        )
-
-        queryset = fallback.union(translations)
-
-    return queryset
-
 
 """
 Base Context, providing navigation and footer links for all pages.
@@ -95,7 +69,7 @@ class PageView(BaseContext, generic.ListView):
     model = Section
     context_object_name = 'sections'
 
-    template_name = 'portfolio/index.html'
+    template_name = 'portfolio/page.html'
 
     def get_context_data(self, **kwargs):
 
@@ -158,7 +132,7 @@ class CollectionView(BaseContext, generic.ListView):
     model = CollectionItem
     context_object_name = 'collectionitems'
 
-    template_name = 'portfolio/collection.html'
+    template_name = 'portfolio/page_collection.html'
 
     def get_context_data(self, **kwargs):
 
@@ -203,7 +177,7 @@ class CollectionView(BaseContext, generic.ListView):
 
 class DetailView(BaseContext, generic.ListView):
     model = CollectionItem
-    template_name = 'portfolio/detail.html'
+    template_name = 'portfolio/page_detail.html'
     context_object_name = 'collectionitem'
 
     def get_queryset(self):
@@ -358,3 +332,31 @@ def check_for_language(lang_code):
         if language[0] == lang_code:
             supported_lang = True
     return supported_lang
+
+
+"""
+Helper function for filtering querysets for current language,
+falling back to default language if translations does not exist
+
+"""
+
+
+def filter_translations(queryset, lang):
+
+    if lang == settings.LANGUAGE_CODE:
+
+        queryset = queryset.filter(lang=lang)
+
+    else:
+        translations = queryset.filter(lang=lang)
+
+        # Fallback to default language
+        fallback = queryset.exclude(
+            common__id__in=translations.values('common')
+        ).filter(
+            lang=settings.LANGUAGE_CODE
+        )
+
+        queryset = fallback.union(translations)
+
+    return queryset
