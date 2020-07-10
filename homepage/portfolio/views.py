@@ -39,7 +39,7 @@ class BaseContext(ContextMixin):
             'position'
         )
         pages = filter_translations(
-            Page.objects.all(), translation.get_language())
+            Page.objects.all(), translation.get_language()).order_by('common__footer_position')
 
         context['pages'] = pages
         context['navlinks'] = navlinks
@@ -97,9 +97,6 @@ class PageView(BaseContext, generic.ListView):
                         common__parent_section__id__in=sections)
 
         context['spotlights'] = filter_translations(spotlights, lang)
-        print(context['spotlights'].values())
-        print(CollectionItem.objects.prefetch_related(
-            'common__parent_section__sections'))
 
         return context
 
@@ -113,14 +110,13 @@ class PageView(BaseContext, generic.ListView):
 
             page_slug = 'home'
 
-        try:
-            page = Page.objects.get(lang=lang, slug=page_slug)
-        except Page.DoesNotExist:
+        page = Page.objects.filter(lang=lang, slug=page_slug)
+        if len(page) == 0:
             page = Page.objects.get(
                 lang=settings.LANGUAGE_CODE, slug=page_slug)
-
+        page = page.first()
         queryset = Section.objects.select_related(
-            'common').filter(common__page__id=page.id)
+            'common').filter(common__page__id=page.common.id)
 
         queryset = filter_translations(
             queryset, lang).order_by('common__position')
@@ -158,7 +154,7 @@ class CollectionView(BaseContext, generic.ListView):
 
         # Instead of parsing url, can we access slug directly?
         page_slug = self.request.path.replace('/', '')
-        print(page_slug)
+
         section = Section.objects.filter(
             lang=lang, slug=page_slug)
         if len(section) == 0:
@@ -185,7 +181,7 @@ class DetailView(BaseContext, generic.ListView):
 
         path = self.request.path.split('/')
         item_slug = path[2]
-        print(item_slug)
+
         queryset = CollectionItem.objects.filter(
             slug=item_slug)
 
@@ -207,13 +203,14 @@ class BaseTemplateView(BaseContext, generic.TemplateView):
     pass
 
 
+""" 
 class ImprintView(BaseTemplateView):
     template_name = 'portfolio/imprint.html'
 
 
 class PrivacyView(BaseTemplateView):
     template_name = 'portfolio/privacy.html'
-
+ """
 
 """
 Contact views, for contact form actions and email confirmation.
@@ -228,6 +225,14 @@ contact/thanks
 contact/delete
 contact/messages
 """
+
+
+class ContactView(BaseTemplateView):
+    model = Message
+    template_name = 'portfolio/new_contact.html'
+
+    def get_context_data(self, **kwargs):
+        context = super.get_context_data(**kwargs)
 
 
 def contact(request):
@@ -296,7 +301,7 @@ def send_confirmation_email(request, contact_id):
     contact = get_object_or_404(Contact, id=contact_id)
     token = account_activation_token.make_token(contact)
     contact.send_confirmation_email(token)
-    return HttpResponseRedirect(reverse(f'portfolio:index'))
+    return HttpResponseRedirect(reverse(f'portfolio:page'))
 
 
 """
@@ -319,9 +324,6 @@ def set_language(request):
                 request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
             response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code)
 
-    print(request.session[settings.LANGUAGE_COOKIE_NAME])
-    for key in response.__dict__:
-        print(f"{key} = {response.__dict__[key]}")
     translation.activate(lang_code)
     return response
 
