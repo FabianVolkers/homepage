@@ -1,6 +1,19 @@
 {% extends 'portfolio/base_page.html' %}
 {% block content %}
-{% if contact.message %}
-
+<h3>{{ contactresponse.name }}</h3>
+<p>{{ contactresponse.message }}</p>
+{{ contactresponse.common.action.name }}
+{% if contactresponse.common.action %}
+<form action="{% url contactresponse.common.action.page.page_type.view_name contactresponse.common.action.argument %}" method="{{ contactresponse.common.action.method }}">
+{% csrf_token %}
+<input type='hidden' name='email' id='email' value="{{ contact.email_address }}"></input>
+<input type='submit' value="{{ contactresponse.common.action.name }}">
+</form>
 {% endif %}
+{% for message in messages %}
+<h4>{{ message.subject }}</h4>
+<h5>{{ message.date_sent }}</h5>
+<p>{{ message.content }}</p>
+
+{% endfor %}
 {% endblock content %}
