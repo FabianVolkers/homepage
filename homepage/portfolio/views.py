@@ -1,7 +1,7 @@
 from .tokens import account_activation_token
 from .models import *
 from django.shortcuts import get_object_or_404, get_list_or_404, render
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404, QueryDict
 from django.urls import reverse
 from django.views import generic
 from django.conf import settings
@@ -39,7 +39,7 @@ class BaseContext(ContextMixin):
             'position'
         )
         pages = filter_translations(
-            Page.objects.all(), translation.get_language()).order_by('common__footer_position')
+            Page.objects.all().select_related('common'), translation.get_language()).order_by('common__footer_position')
 
         context['pages'] = pages
         context['navlinks'] = navlinks
@@ -52,7 +52,7 @@ class BaseContext(ContextMixin):
 Generic Views for Page, Collection, and Detail pages.
 #####################################################
 
-Page View consists of Sections defined in the database. 
+Page View consists of Sections defined in the database.
 (model: Page, PageCommon)
 
 Collection View consists of list view of Collection Items, also defined in the
@@ -88,7 +88,7 @@ class PageView(BaseContext, generic.ListView):
 
         context['collectionitems'] = queryset
 
-        print(context['pages'].values())
+        # print(context['pages'].values())
 
         spotlights = CollectionItem.objects.filter(
             common__spotlight=True).select_related(
@@ -112,7 +112,7 @@ class PageView(BaseContext, generic.ListView):
 
         page = Page.objects.filter(lang=lang, slug=page_slug)
         if len(page) == 0:
-            page = Page.objects.get(
+            page = Page.objects.filter(
                 lang=settings.LANGUAGE_CODE, slug=page_slug)
         page = page.first()
         queryset = Section.objects.select_related(
@@ -203,7 +203,7 @@ class BaseTemplateView(BaseContext, generic.TemplateView):
     pass
 
 
-""" 
+"""
 class ImprintView(BaseTemplateView):
     template_name = 'portfolio/imprint.html'
 
@@ -227,14 +227,141 @@ contact/messages
 """
 
 
-class ContactView(BaseTemplateView):
-    model = Message
+class ContactView(BaseContext, generic.View):
+    model = ContactResponse
+    context_object_name = 'contactresponses'
     template_name = 'portfolio/new_contact.html'
 
+    def get(self, request, *args, **kwargs):
+
+        context = self.get_context_data(kwargs=kwargs)
+
+        lang = self.request.COOKIES[settings.LANGUAGE_COOKIE_NAME]
+
+        response_slug = kwargs['slug']
+        contact_id = self.request.GET.get('id')
+        token = self.request.GET.get('token')
+        if len(response_slug) > 0:
+            queryset = ContactResponse.objects.filter(
+                slug=response_slug)
+
+            context['contactresponse'] = filter_translations(
+                queryset, lang).first()
+
+        if contact_id:
+            contact = get_object_or_404(Contact, id=contact_id)
+
+        """
+        Redirects for email confirmation and resend confirmation email
+        """
+        # Confirm email address and redirect to contact/confirmed
+        if response_slug == 'confirm' and contact_id and token:
+            if account_activation_token.check_token(contact, token):
+                contact.email_confirmed = True
+                contact.save()
+                messages = Message.objects.filter(contact=contact, sent=False)
+                for message in messages:
+                    message.send()
+                url = reverse('portfolio:contact', args=['confirmed'])
+                return HttpResponseRedirect(f"{url}?{QueryDict(f'id={contact.id}').urlencode()}")
+            else:
+                raise Http404('Invalid user/token combination')
+
+        # Catch missing contact or token params
+        elif response_slug == 'confirm' and (not contact_id or not token):
+            raise Http404('Missing user or token parameters')
+
+        # raise 404 on other urls
+        elif response_slug not in [
+                'confirmed',
+                'thanks',
+                'messages',
+                'unconfirmed',
+                'send-confirmation-email',
+                'sent-confirmation-email']:
+            raise Http404('Contact view not found')
+
+        # Finally, render template with context
+        return render(request, 'portfolio/new_contact.html', context=context)
+
+    def post(self, request, *args, **kwargs):
+
+        try:
+            response_slug = kwargs['slug']
+        except KeyError:
+            response_slug = ''
+
+        if response_slug == '':
+            email = request.POST['email']
+            subject = request.POST['subject']
+            content = request.POST['message']
+            try:
+                contact = Contact.objects.get(email_address=email)
+            except Contact.DoesNotExist:
+                contact = Contact(email_address=email)
+                contact.save()
+                token = account_activation_token.make_token(contact)
+                contact.send_confirmation_email(token)
+
+            # try:
+
+            message = Message(
+                contact=contact,
+                subject=subject,
+                content=content)
+
+            message.save()
+
+            if message.contact.email_confirmed:
+                message.send()
+                return HttpResponseRedirect(
+                    reverse(
+                        'portfolio:contact',
+                        args=['thanks']))
+            else:
+                url = reverse('portfolio:contact', args=['unconfirmed'])
+                return HttpResponseRedirect(f"{url}?{QueryDict(f'id={contact.id}').urlencode()}")
+
+        elif response_slug == 'send-confirmation-email':
+            email = request.POST['email']
+
+            contact = Contact.objects.get(email_address=email)
+            token = account_activation_token.make_token(contact)
+            contact.send_confirmation_email(token)
+
+            return HttpResponseRedirect(reverse('portfolio:contact', args=['sent-confirmation-email']))
+
+    def delete(self, request, *args, **kwargs):
+        """Delete all contact's information"""
+        pass
+
     def get_context_data(self, **kwargs):
-        context = super.get_context_data(**kwargs)
+        print(kwargs)
+        context = super().get_context_data(**kwargs)
+
+        contact_id = self.request.GET.get('id')
+        token = self.request.GET.get('token')
+
+        try:
+            response_slug = kwargs['kwargs']['slug']
+        except KeyError:
+            response_slug = ''
+
+        if contact_id:
+            try:
+                contact = Contact.objects.get(id=contact_id)
+                context['contact'] = contact
+                print(contact)
+                if response_slug in ['confirmed', 'thanks', 'messages']:
+                    context['messages'] = Message.objects.filter(
+                        contact=contact, sent=True)
+            except ValidationError:
+                print('invalid contact id, skipping contact')
+
+        return context
 
 
+""" 
 def contact(request):
     email = request.POST['email']
     subject = request.POST['subject']
@@ -266,10 +393,10 @@ def contact(request):
         return HttpResponseRedirect(
             reverse(
                 'portfolio:unconfirmed-email',
-                args=[contact.id]))
+                args=[contact.id])) """
 
-    # except:
-    #    return HttpResponseRedirect(reverse('portfolio:index'))
+# except:
+#    return HttpResponseRedirect(reverse('portfolio:index'))
 
 
 def contacted(request, message_id):
