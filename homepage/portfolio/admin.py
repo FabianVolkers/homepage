@@ -97,8 +97,38 @@ class TranslationAdmin(admin.ModelAdmin):
                 yield inline.get_formset(request, obj), inline
 
 
-class PageAdmin(SlugAdmin):
-    pass
+class PageAdmin(admin.ModelAdmin):
+    model = Page
+    list_display = ('name', 'lang')
+
+
+class PageInline(TranslationInline):
+    model = Page
+
+
+class PageCommonAdmin(SlugAdmin):
+    model = PageCommon
+    #readonly_fields = ('detail_view',)
+    inlines = [
+        PageInline
+    ]
+
+
+class ContactResponseAdmin(admin.ModelAdmin):
+    model = ContactResponse
+    list_display = ('name', 'lang')
+
+
+class ContactResponeInline(TranslationInline):
+    model = ContactResponse
+
+
+class ContactResponseCommonAdmin(SlugAdmin):
+    model = ContactResponseCommon
+    #readonly_fields = ('detail_view',)
+    inlines = [
+        ContactResponeInline
+    ]
 
 
 """ admin.site.register(Project)
@@ -116,7 +146,10 @@ admin.site.register(LinkEdit, LinkAdmin)
 admin.site.register(Icon)
 admin.site.register(PageType)
 admin.site.register(Page, PageAdmin)
-admin.site.register(PageCommon)
+admin.site.register(PageCommon, PageCommonAdmin)
 #admin.site.register(TranslationsGroup, TranslationAdmin)
 admin.site.register(SectionCommon, SectionCommonAdmin)
 admin.site.register(CollectionItemCommon, CollectionItemCommonAdmin)
+admin.site.register(ContactResponseCommon, ContactResponseCommonAdmin)
+admin.site.register(ContactResponse, ContactResponseAdmin)
+admin.site.register(ContactResponseAction)
