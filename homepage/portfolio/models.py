@@ -1,13 +1,14 @@
 import uuid
 import os
+import datetime
 
 from django.db import models
 from django.core.mail import send_mail, EmailMessage, BadHeaderError, EmailMultiAlternatives
 from django.conf import settings
-from django.template.loader import get_template
+from django.template.loader import get_template, render_to_string
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-
+from django.shortcuts import render
 """ 
 TODO: 
 - Link abstract base class
@@ -306,52 +307,6 @@ class CollectionItem(AbstractTranslatable):
         super().save()
 
 
-""" 
-class Project(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, editable=False)
-    description = models.TextField()
-    image = models.CharField(max_length=100)
-    created = models.DateTimeField()
-    spotlight = models.BooleanField()
-
-    def __str__(self):
-        return self.name
-
-    def save(self):
-        self.slug = slugify(self.name)
-        super().save()
-
-class Collection(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, editable=False)
-    description = models.TextField()
-    cover_photo = models.CharField(max_length=100)   
-    spotlight = models.BooleanField()
-
-    def __str__(self):
-        return self.name
-
-    def save(self):
-        self.slug = slugify(self.name)
-        super().save()
-
-class Photo(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, editable=False)
-    description = models.TextField()
-    image = models.CharField(max_length=100)
-    collection = models.ForeignKey(Collection, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return self.name
-
-    def save(self):
-        self.slug = slugify(self.name)
-        super().save()
- """
-
-
 class Contact(models.Model):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
@@ -363,10 +318,14 @@ class Contact(models.Model):
 
     def send_confirmation_email(self, token):
         if settings.DEV_MODE:
-            url = f'{settings.PROTO}://{settings.HOST}:{settings.PORT}/contact/confirm-email/{self.id}/{token}'
+            url = f'{settings.PROTO}://{settings.HOST}:{settings.PORT}/contact-view/confirm?id={self.id}&token={token}'
         else:
             url = f'{settings.PROTO}://{settings.HOST}/contact/confirm-email/{self.id}/{token}'
         print(url)
+
+        email = render_to_string(
+            'portfolio/email_confirmation.html', context={'user': {'confirmation_url': url}})
+        print(email)
         send_mail(
             subject='Please Confirm your email address',
             from_email='noreply@fabianvolkers.com',
@@ -382,6 +341,8 @@ class Message(models.Model):
     subject = models.CharField(max_length=100)
     content = models.TextField()
     sent = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now=True)
+    date_sent = models.DateTimeField(blank=True, null=True, editable=False)
 
     def __str__(self):
         return f"{self.contact.email_address} - {self.subject}"
@@ -405,5 +366,38 @@ class Message(models.Model):
 
         email.attach_alternative(html_message, 'text/html')
         email.send(fail_silently=False)
-        # TODO: Check if email was sent successfi;;y
+
+        self.date_sent = datetime.datetime.now()
         self.sent = True
+
+
+class ContactResponseAction(models.Model):
+    name = models.CharField(max_length=24)
+    page = models.ForeignKey(
+        PageCommon, on_delete=models.SET_NULL, null=True, blank=True)
+    method = models.CharField(max_length=7, choices=[(
+        'GET', 'GET'), ('POST', 'POST'), ('DELETE', 'DELETE')])
+    argument = models.CharField(max_length=32, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class ContactResponseCommon(models.Model):
+    friendly_name = models.CharField(max_length=32)
+    action = models.ForeignKey(
+        ContactResponseAction, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.friendly_name}"
+
+
+class ContactResponse(AbstractTranslatable):
+    name = models.CharField(max_length=32)
+    slug = models.SlugField(blank=True, null=True)
+    message = models.TextField()
+    common = models.ForeignKey(
+        ContactResponseCommon, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.lang}"
