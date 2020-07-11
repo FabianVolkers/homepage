@@ -1,0 +1,9 @@
+{% extends 'portfolio/base_email.html' %}
+{% block content %}
+<h4>Confirm your email</h4>
+<p>Please <a href="{{ user.confirmation_url }}">confirm your email address</a>. Afterwards your message will be delivered to my inbox.<br>
+If the link above does not work try copy and pasting the full url in your browser.<br><br>
+<a href="{{ user.confirmation_url }}">{{ user.confirmation_url }}</a>
+</p>
+
+{% endblock content %}

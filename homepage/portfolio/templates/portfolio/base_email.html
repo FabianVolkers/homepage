@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-
-<html lang="en">
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_language_info for LANGUAGE_CODE as lang %}
+<html lang="{{ LANGUAGE_CODE }}">
 
 <head>
     <meta charset="utf-8">
-
+    <meta name="viewport" content="width=device-width">
+    <link rel="shortcut icon" type="image/png" href="{{MEDIA_URL}}/favicon.ico" />
     <title>{% block title %}Fabian Volkers{% endblock title %}</title>
     <meta name="description" content="{% block description %}Fabian Volkers' Portfolio{% endblock description %}">
     <meta name="author" content="Fabian Volkers">
@@ -12,26 +15,65 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'portfolio/style.css' %}">
 
+    <script src="https://kit.fontawesome.com/0d7dc3f746.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
     {% block navbar %}
     <div class="nav-container">
         <nav>
-            <div class="left-menu">
-                <a href="#">Home</a>
-                <a href="#">Blog</a>
-                <a href="#">About</a>
-                <a href="#">Contact</a>
-            </div>
-            <a href="" class="logo">Fabian Volkers</a>
+            <input type="checkbox" id="nav-toggle">
+            <label for="nav-toggle" class="burger-menu">
+                <i class="fas fa-bars"></i>
+            </label>
+
+            <a href="/" class="logo">Fabian Volkers</a>
         </nav>
     </div>
     {% endblock navbar %}
-    {% block content %}
-    <p>Content block not specified</p>
-    {% endblock content %}
-
+    <div id='content'>
+        {% block content %}
+        {% lorem %}
+        {% endblock content %}
+    </div>
+    {% block footer %}
+    <footer>
+        <div id='footer-left'>
+            <h4>Sitemap</h4>
+            <ul>
+                {% for page in pages %}
+                {% if page.common.footer_link == True%}
+                <li>
+                    <a href="{% url page.common.page_type.view_name page.slug %}">{{ page.name }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        <div id='footer-center'>
+            <h4>Legal</h4>
+            <ul>
+                <li>
+                    <a href={% url 'portfolio:page' 'imprint' %}>Imprint</a>
+                </li>
+                <li>
+                    <a href={% url 'portfolio:page' 'privacy' %}>Privacy</a>
+                </li>
+            </ul>
+        </div>
+        <div id='footer-right'>
+            <h4>Links</h4>
+            <ul>
+                {% for link in footerlinks %}
+                <li>
+                    <a href="{{ link.url }}"><i class="{{ link.icon.icon_class }}"></i>{{ link.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </footer>
+    {% endblock footer %}
+    <script src="{% static 'portfolio/script.js' %}" crossorigin="anonymous"></script>
 </body>
 
 </html>
