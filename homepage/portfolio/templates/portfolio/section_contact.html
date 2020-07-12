@@ -21,6 +21,25 @@
     <div class="contact-section" id="circle-section">
         <div class='circle-container'>
         <p class="circle-text">...{% trans "or find me on one of these platforms" %}</p>
+            <style>
+            {% for sociallink in sociallinks %}
+            .{{ sociallink.icon.slug }} {
+                background: {{ sociallink.icon.colour_value }};
+                color: #FFFFFF;
+
+            }
+
+            .{{ sociallink.icon.slug }}:hover {
+                background: #FFFFFF;
+                color: {{ sociallink.icon.colour_value }} !important;
+            }
+            {% endfor %}
+            </style>
+            {% for sociallink in sociallinks %}
+            <a href=" {{ sociallink.external }}" target="_blank" class="{{ sociallink.position }} {{ sociallink.icon.slug }} circle-fa" style="background"><i
+                    class="fab {{ sociallink.icon.icon_class }} icon-fa"></i></a>
+            {% endfor %}
+            <!--
             <a href="#" target="_blank" class="deg0 circle-fa" id="twitter"><i
                     class="fab fa-twitter icon-fa"></i></a>
             <a href="https://github.com/FabianVolkers" id="github" class="deg45 circle-fa"><i
@@ -36,7 +55,7 @@
                 class="deg270 circle-fa"><i class="fab fa-linkedin-in icon-fa"></i></a>
             <a href="https://blog.fabianvolkers.com" id="blog" class="deg315 circle-fa"><i
                     class="fas fa-blog"></i></a>
-
+-->
         </div>
     </div>
 </div>
