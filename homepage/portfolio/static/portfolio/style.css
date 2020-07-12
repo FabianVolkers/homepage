@@ -154,6 +154,15 @@ nav a:visited {
     position: absolute;
     top: 0;
     left: 0;
+    background-color: black;
+    padding: 2%;
+    opacity: 0.7;
+    color: white;
+    transition-duration: 0.7s;
+}
+
+.spotlight-caption:hover {
+    opacity: 0.9;
 }
 
 .spotlight-container {
