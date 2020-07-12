@@ -41,6 +41,8 @@ class BaseContext(ContextMixin):
         pages = filter_translations(
             Page.objects.all().select_related('common'), translation.get_language()).order_by('common__footer_position')
 
+        context['sociallinks'] = SocialLink.objects.all()
+        print(context['sociallinks'])
         context['pages'] = pages
         context['navlinks'] = navlinks
         context['footerlinks'] = FooterLink.objects.order_by('position')
