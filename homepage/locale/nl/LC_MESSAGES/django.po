@@ -121,7 +121,7 @@ msgstr "Email adres"
 #: portfolio/templates/portfolio/section_contact.html:10
 #: portfolio/templates/portfolio/section_contact.html:11
 msgid "Subject"
-msgstr "Betref"
+msgstr "Onderwerp"
 
 #: portfolio/templates/portfolio/section_contact.html:13
 msgid "Message"
@@ -133,7 +133,7 @@ msgstr "Typ hier je bericht"
 
 #: portfolio/templates/portfolio/section_contact.html:18
 msgid "Submit"
-msgstr "Zenden"
+msgstr "Verzenden"
 
 #: portfolio/templates/portfolio/section_contact.html:23
 msgid "or find me on one of these platforms"
