@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.conf import settings
 
 from .models import *
+from .forms import *
 # Message, Contact, CollectionItem, Section, SectionType, Setting, Icon, Page, SectionCommon, NavLink, FooterLink, CollectionItem, LinkEdit # TranslationsGroup
 
 # Register your models here.
@@ -20,6 +21,12 @@ class SlugAdmin(admin.ModelAdmin):
     }
 
 
+class IconAdmin(admin.ModelAdmin):
+    model = Icon
+    form = IconForm
+    #readonly_fields = ('slug',)
+
+
 class NavLinkInline(admin.TabularInline):
     model = NavLink
     readonly_fields = ('url',)
@@ -30,10 +37,16 @@ class FooterLinkInline(admin.TabularInline):
     readonly_fields = ('url',)
 
 
+class SocialLinkInline(admin.TabularInline):
+    model = SocialLink
+
+
 class LinkAdmin(admin.ModelAdmin):
     inlines = [
         NavLinkInline,
-        FooterLinkInline
+        SocialLinkInline,
+        FooterLinkInline,
+
     ]
 
 
@@ -143,7 +156,7 @@ admin.site.register(NavLink)
 admin.site.register(Setting)
 admin.site.register(FooterLink)
 admin.site.register(LinkEdit, LinkAdmin)
-admin.site.register(Icon)
+admin.site.register(Icon, IconAdmin)
 admin.site.register(PageType)
 admin.site.register(Page, PageAdmin)
 admin.site.register(PageCommon, PageCommonAdmin)
