@@ -106,7 +106,7 @@ class PageView(BaseContext, generic.ListView):
 
     def get_queryset(self):
 
-        lang = self.request.COOKIES[settings.LANGUAGE_COOKIE_NAME]
+        lang = translation.get_language()
 
         page_slug = self.request.path.replace('/', '')
 
@@ -154,7 +154,7 @@ class CollectionView(BaseContext, generic.ListView):
 
     def get_queryset(self):
 
-        lang = self.request.COOKIES[settings.LANGUAGE_COOKIE_NAME]
+        lang = translation.get_language()
 
         # Instead of parsing url, can we access slug directly?
         page_slug = self.request.path.replace('/', '')
@@ -181,7 +181,7 @@ class DetailView(BaseContext, generic.ListView):
     context_object_name = 'collectionitem'
 
     def get_queryset(self):
-        lang = self.request.COOKIES[settings.LANGUAGE_COOKIE_NAME]
+        lang = translation.get_language()
 
         path = self.request.path.split('/')
         item_slug = path[2]
@@ -240,7 +240,7 @@ class ContactView(BaseContext, generic.View):
 
         context = self.get_context_data(kwargs=kwargs)
 
-        lang = self.request.COOKIES[settings.LANGUAGE_COOKIE_NAME]
+        lang = translation.get_language()
 
         response_slug = kwargs['slug']
         contact_id = self.request.GET.get('id')
