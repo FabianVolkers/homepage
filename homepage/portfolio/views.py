@@ -1,30 +1,25 @@
-from .tokens import account_activation_token
-from .models import *
-from django.shortcuts import get_object_or_404, get_list_or_404, render
-from django.http import HttpResponse, HttpResponseRedirect, Http404, QueryDict
-from django.urls import reverse
-from django.views import generic
+
+from importlib import import_module
+
 from django.conf import settings
-from django.utils import translation
+from django.core.exceptions import *
 from django.db.models import Q
+from django.http import Http404, HttpResponse, HttpResponseRedirect, QueryDict
+from django.shortcuts import get_list_or_404, get_object_or_404, render
+from django.urls import reverse
+from django.utils import translation
+from django.views import generic
 from django.views.generic.base import ContextMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
-from django.core.exceptions import *
-from importlib import import_module
 
+from .models import *
+from .tokens import account_activation_token
 from .translations import filter_translations
+
 
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 s = SessionStore()
-# from django.contrib.auth.tokens import default_token_generator
-
-
-"""
-TODO:
-- replace contact views with User Notification view with message and action
-
-"""
 
 
 """
@@ -37,14 +32,16 @@ class BaseContext(ContextMixin):
 
         context = super().get_context_data(**kwargs)
 
+        lang = translation.get_language()
+
         navlinks = NavLink.objects.select_related('page').order_by(
             'position'
         )
+        pages = Page.objects.all().select_related('common')
         pages = filter_translations(
-            Page.objects.all().select_related('common'), translation.get_language()).order_by('common__footer_position')
+            pages, lang).order_by('common__footer_position')
 
         context['sociallinks'] = SocialLink.objects.all()
-        print(context['sociallinks'])
         context['pages'] = pages
         context['navlinks'] = navlinks
         context['footerlinks'] = FooterLink.objects.order_by('position')
