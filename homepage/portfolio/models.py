@@ -2,6 +2,7 @@ import uuid
 import os
 import datetime
 
+
 from django.db import models
 from django.core.mail import send_mail, EmailMessage, BadHeaderError, EmailMultiAlternatives
 from django.conf import settings
@@ -9,8 +10,10 @@ from django.template.loader import get_template, render_to_string
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import render
-""" 
-TODO: 
+
+from .validators import *
+"""
+TODO:
 - Link abstract base class
 - AbstractTranslatable BaseEntry with commonEntry and TranslationGroup
 
@@ -36,7 +39,16 @@ for j in range(settings.MAX_NAVLINKS):
 for k in range(settings.MAX_FOOTERLINKS):
     link_positions.append((f"footer-{k}", f"footer {k}"))
 
-sociallink_positions = []
+sociallink_positions = [
+    ('deg270', '12:00'),
+    ('deg315', '01:30'),
+    ('deg0', '03:00'),
+    ('deg45', '04:30'),
+    ('deg90', '06:00'),
+    ('deg135', '07:30'),
+    ('deg180', '09:00'),
+    ('deg225', '10:30')
+]
 # for l in range()
 link_types = [
     ('page', 'Page'),
@@ -58,8 +70,20 @@ class Icon(models.Model):
     name = models.CharField(max_length=64)
     icon_class = models.CharField(max_length=64)
 
+    colour = models.CharField(max_length=7, null=True,
+                              blank=True, validators=[validate_colour_code])
+    colour_value = models.CharField(max_length=7, null=True,
+                                    blank=True, validators=[validate_colour_code])
+
+    slug = models.SlugField(null=True)
+
     def __str__(self):
         return self.name
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
+        self.slug = slugify(self.name)
+        self.colour = self.colour_value
 
 
 class AbstractTranslatable(models.Model):
@@ -116,9 +140,10 @@ class Page(AbstractTranslatable):
     name = models.CharField(max_length=24)
 
     slug = models.SlugField(null=True, blank=True)
-    common = models.ForeignKey(PageCommon, on_delete=models.CASCADE, null=True)
+    common = models.ForeignKey(
+        PageCommon, on_delete=models.CASCADE, null=True)
 
-    #nav_link = models.ForeignKey(NavLink, on_delete=models.SET_NULL, default=1, null=True)
+    # nav_link = models.ForeignKey(NavLink, on_delete=models.SET_NULL, default=1, null=True)
 
     class Meta:
         verbose_name = _('Single Page')
@@ -152,7 +177,7 @@ class SectionCommon(models.Model):
         null=True, blank=True,
         related_name='sections'
     )
-    #nav_link = models.ForeignKey(NavLink, on_delete=models.SET_NULL, default=1, null=True)
+    # nav_link = models.ForeignKey(NavLink, on_delete=models.SET_NULL, default=1, null=True)
 
     class Meta:
         verbose_name = _('Page Section')
@@ -164,7 +189,7 @@ class SectionCommon(models.Model):
 
 
 class Section(AbstractTranslatable):
-    #section_positions = range(1, len(Section.objects.all()))
+    # section_positions = range(1, len(Section.objects.all()))
     name = models.CharField(max_length=64)
     slug = models.SlugField()
     detail_slug = models.SlugField(null=True, blank=True)
@@ -191,7 +216,8 @@ class Section(AbstractTranslatable):
                 NavLink.objects.get(name=self.slug)
             except models.ObjectDoesNotExist:
                 position = len(NavLink.objects.all())
-                navlink = NavLink(name=self.slug, url=f'/#{self.slug}', position=position)
+                navlink = NavLink(
+                    name=self.slug, url=f'/#{self.slug}', position=position)
                 navlink.save()
                 self.common.nav_link = navlink """
         return super().save()
@@ -205,7 +231,8 @@ class AbstractLink(models.Model):
         max_length=64, default='portfolio:detail', choices=views)
     position = models.CharField(
         max_length=8, null=True, choices=link_positions, unique=True)
-    link_for = models.CharField(max_length=24, choices=link_types, null=True)
+    link_for = models.CharField(
+        max_length=24, choices=link_types, null=True)
     section = models.ForeignKey(
         Section, null=True, blank=True, on_delete=models.SET_NULL)
     page = models.ForeignKey(PageCommon, null=True,
@@ -232,8 +259,8 @@ class AbstractLink(models.Model):
 
     class Meta:
         abstract = True
-        #verbose_name = 'ModelName'
-        #verbose_name_plural = 'ModelNames'
+        # verbose_name = 'ModelName'
+        # verbose_name_plural = 'ModelNames'
 
 
 class LinkEdit(models.Model):
@@ -247,6 +274,8 @@ class SocialLink(AbstractLink):
     icon = models.ForeignKey(Icon, on_delete=models.SET_NULL, null=True)
     link_edit = models.ForeignKey(
         LinkEdit, on_delete=models.SET_NULL, null=True, related_name='social_links')
+    position = models.CharField(
+        max_length=6, null=True, blank=True, unique=True, choices=sociallink_positions)
 
     class Meta:
         verbose_name = _('Social Link')
