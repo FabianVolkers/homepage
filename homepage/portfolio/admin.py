@@ -1,18 +1,8 @@
-from django.contrib import admin
 from django.conf import settings
+from django.contrib import admin
 
-from .models import *
 from .forms import *
-# Message, Contact, CollectionItem, Section, SectionType, Setting, Icon, Page, SectionCommon, NavLink, FooterLink, CollectionItem, LinkEdit # TranslationsGroup
-
-# Register your models here.
-
-
-""" 
-TODO: 
-- TranslationGroups Admin view with children
-
-"""
+from .models import *
 
 
 class SlugAdmin(admin.ModelAdmin):
@@ -24,7 +14,6 @@ class SlugAdmin(admin.ModelAdmin):
 class IconAdmin(admin.ModelAdmin):
     model = Icon
     form = IconForm
-    #readonly_fields = ('slug',)
 
 
 class NavLinkInline(admin.TabularInline):
@@ -53,15 +42,6 @@ class LinkAdmin(admin.ModelAdmin):
 class TranslationInline(admin.StackedInline):
     max_num = len(settings.LANGUAGES)
 
-    """ def get_prepopulated_fields(self, request, obj=None):
-        translated = self.model.objects.filter(translations_group__id=obj.id)
-        langs = settings.LANGUAGES
-        for lang in translated:
-            idx = [y[0] for y in langs].index(lang.lang)
-            del langs[idx]
-        
-        return {"lang": next(iter(langs))} """
-
 
 class SectionCommonInline(admin.TabularInline):
     model = SectionCommon
@@ -89,7 +69,6 @@ class CollectionItemInline(TranslationInline):
 
 class CollectionItemCommonAdmin(SlugAdmin):
     model = CollectionItemCommon
-    #readonly_fields = ('detail_view',)
     inlines = [
         CollectionItemInline
     ]
@@ -121,7 +100,6 @@ class PageInline(TranslationInline):
 
 class PageCommonAdmin(SlugAdmin):
     model = PageCommon
-    #readonly_fields = ('detail_view',)
     inlines = [
         PageInline
     ]
@@ -138,15 +116,11 @@ class ContactResponeInline(TranslationInline):
 
 class ContactResponseCommonAdmin(SlugAdmin):
     model = ContactResponseCommon
-    #readonly_fields = ('detail_view',)
     inlines = [
         ContactResponeInline
     ]
 
 
-""" admin.site.register(Project)
-admin.site.register(Collection)
-admin.site.register(Photo) """
 admin.site.register(Message)
 admin.site.register(Contact)
 admin.site.register(CollectionItem, CollectionItemAdmin)
@@ -160,7 +134,6 @@ admin.site.register(Icon, IconAdmin)
 admin.site.register(PageType)
 admin.site.register(Page, PageAdmin)
 admin.site.register(PageCommon, PageCommonAdmin)
-#admin.site.register(TranslationsGroup, TranslationAdmin)
 admin.site.register(SectionCommon, SectionCommonAdmin)
 admin.site.register(CollectionItemCommon, CollectionItemCommonAdmin)
 admin.site.register(ContactResponseCommon, ContactResponseCommonAdmin)
