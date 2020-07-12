@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-05 19:42+0200\n"
+"POT-Creation-Date: 2020-07-12 02:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,43 +18,123 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: homepage/settings.py:137
+#: homepage/settings.py:138
 msgid "German"
 msgstr "Duits"
 
-#: homepage/settings.py:138
+#: homepage/settings.py:139
 msgid "English"
 msgstr "Engels"
 
-#: homepage/settings.py:139
+#: homepage/settings.py:140
 msgid "Dutch"
 msgstr "Nederlands"
 
-#: portfolio/templates/portfolio/index_contact.html:4
+#: portfolio/models.py:132
+msgid "Page"
+msgstr "Pagina"
+
+#: portfolio/models.py:133
+msgid "Pages"
+msgstr "Alle paginas"
+
+#: portfolio/models.py:149
+msgid "Single Page"
+msgstr "Pagina vertaling"
+
+#: portfolio/models.py:150
+msgid "Single Pages"
+msgstr "Pagina vertalingen"
+
+#: portfolio/models.py:183
+msgid "Page Section"
+msgstr "Pagina sectie"
+
+#: portfolio/models.py:184
+msgid "Page Sections"
+msgstr "Pagina secties"
+
+#: portfolio/models.py:201
+msgid "Section Translation"
+msgstr "Sectie vertaling"
+
+#: portfolio/models.py:202
+msgid "Sections Translations"
+msgstr "Sectie vertalingen"
+
+#: portfolio/models.py:269
+msgid "Page Link"
+msgstr "Link"
+
+#: portfolio/models.py:270
+msgid "Page Links"
+msgstr "Alle Links"
+
+#: portfolio/models.py:281
+msgid "Social Link"
+msgstr "Link: Social Media"
+
+#: portfolio/models.py:282
+msgid "Social Links"
+msgstr "Links: Social Media"
+
+#: portfolio/models.py:291
+msgid "Footer Link"
+msgstr ""
+
+#: portfolio/models.py:292
+msgid "Footer Links"
+msgstr ""
+
+#: portfolio/models.py:300
+msgid "Navigation Link"
+msgstr ""
+
+#: portfolio/models.py:301
+msgid "Navigation Links"
+msgstr ""
+
+#: portfolio/models.py:315
+msgid "Collection Item"
+msgstr "Collectie stuk"
+
+#: portfolio/models.py:316
+msgid "Collection Items"
+msgstr "Collection stukken"
+
+#: portfolio/models.py:331
+msgid "Item Translation"
+msgstr "Stuk vertaling"
+
+#: portfolio/models.py:332
+msgid "Item Translations"
+msgstr "Stuk vertalingen"
+
+#: portfolio/templates/portfolio/section_contact.html:4
 msgid "Send me a message"
 msgstr "Stuur me een Bericht"
 
-#: portfolio/templates/portfolio/index_contact.html:7
+#: portfolio/templates/portfolio/section_contact.html:7
 msgid "Email Address"
 msgstr "Email adres"
 
-#: portfolio/templates/portfolio/index_contact.html:10
-#: portfolio/templates/portfolio/index_contact.html:11
+#: portfolio/templates/portfolio/section_contact.html:10
+#: portfolio/templates/portfolio/section_contact.html:11
 msgid "Subject"
 msgstr "Betref"
 
-#: portfolio/templates/portfolio/index_contact.html:13
+#: portfolio/templates/portfolio/section_contact.html:13
 msgid "Message"
 msgstr "Bericht"
 
-#: portfolio/templates/portfolio/index_contact.html:14
+#: portfolio/templates/portfolio/section_contact.html:14
 msgid "Enter your message here"
 msgstr "Typ hier je bericht"
 
-#: portfolio/templates/portfolio/index_contact.html:18
+#: portfolio/templates/portfolio/section_contact.html:18
 msgid "Submit"
 msgstr "Zenden"
 
-#: portfolio/templates/portfolio/index_contact.html:23
+#: portfolio/templates/portfolio/section_contact.html:23
 msgid "or find me on one of these platforms"
 msgstr "of vind me op een van deze sites"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-05 19:42+0200\n"
+"POT-Creation-Date: 2020-07-12 02:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,44 +18,124 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: homepage/settings.py:137
+#: homepage/settings.py:138
 msgid "German"
 msgstr "Deutsch"
 
-#: homepage/settings.py:138
+#: homepage/settings.py:139
 msgid "English"
 msgstr "Englisch"
 
-#: homepage/settings.py:139
+#: homepage/settings.py:140
 msgid "Dutch"
 msgstr "Niederländisch"
 
-#: portfolio/templates/portfolio/index_contact.html:4
+#: portfolio/models.py:132
+msgid "Page"
+msgstr "Seite"
+
+#: portfolio/models.py:133
+msgid "Pages"
+msgstr "Seiten"
+
+#: portfolio/models.py:149
+msgid "Single Page"
+msgstr "Einzelseite"
+
+#: portfolio/models.py:150
+msgid "Single Pages"
+msgstr "Einzelseiten"
+
+#: portfolio/models.py:183
+msgid "Page Section"
+msgstr "Seiten Abschnitt"
+
+#: portfolio/models.py:184
+msgid "Page Sections"
+msgstr "Seiten Abschnitte"
+
+#: portfolio/models.py:201
+msgid "Section Translation"
+msgstr "Abschnitts-Übersetzung"
+
+#: portfolio/models.py:202
+msgid "Sections Translations"
+msgstr "Abschnitts-Übersetzungen"
+
+#: portfolio/models.py:269
+msgid "Page Link"
+msgstr "Seiten Link"
+
+#: portfolio/models.py:270
+msgid "Page Links"
+msgstr "Seiten Links"
+
+#: portfolio/models.py:281
+msgid "Social Link"
+msgstr "Link: Soziale Medien"
+
+#: portfolio/models.py:282
+msgid "Social Links"
+msgstr "Links: Soziale Medien"
+
+#: portfolio/models.py:291
+msgid "Footer Link"
+msgstr ""
+
+#: portfolio/models.py:292
+msgid "Footer Links"
+msgstr ""
+
+#: portfolio/models.py:300
+msgid "Navigation Link"
+msgstr ""
+
+#: portfolio/models.py:301
+msgid "Navigation Links"
+msgstr ""
+
+#: portfolio/models.py:315
+msgid "Collection Item"
+msgstr "Sammlungs-Eintrag"
+
+#: portfolio/models.py:316
+msgid "Collection Items"
+msgstr "Sammlungs-Einträge"
+
+#: portfolio/models.py:331
+msgid "Item Translation"
+msgstr "Eintrags Übersetzung"
+
+#: portfolio/models.py:332
+msgid "Item Translations"
+msgstr "Eintrags Übersetzungen"
+
+#: portfolio/templates/portfolio/section_contact.html:4
 msgid "Send me a message"
 msgstr "Sende mir eine Nachricht"
 
-#: portfolio/templates/portfolio/index_contact.html:7
+#: portfolio/templates/portfolio/section_contact.html:7
 msgid "Email Address"
 msgstr "Email Adresse"
 
-#: portfolio/templates/portfolio/index_contact.html:10
-#: portfolio/templates/portfolio/index_contact.html:11
+#: portfolio/templates/portfolio/section_contact.html:10
+#: portfolio/templates/portfolio/section_contact.html:11
 msgid "Subject"
 msgstr "Betreff"
 
-#: portfolio/templates/portfolio/index_contact.html:13
+#: portfolio/templates/portfolio/section_contact.html:13
 msgid "Message"
 msgstr "Nachricht"
 
-#: portfolio/templates/portfolio/index_contact.html:14
+#: portfolio/templates/portfolio/section_contact.html:14
 msgid "Enter your message here"
 msgstr "Hier kannst du deine Nachricht eingeben"
 
-#: portfolio/templates/portfolio/index_contact.html:18
+#: portfolio/templates/portfolio/section_contact.html:18
 msgid "Submit"
 msgstr "Senden"
 
-#: portfolio/templates/portfolio/index_contact.html:23
+#: portfolio/templates/portfolio/section_contact.html:23
 msgid "or find me on one of these platforms"
 msgstr "oder finde mich auf einer dieser Seiten"
 
