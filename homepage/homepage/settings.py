@@ -14,7 +14,6 @@ import os
 import random
 
 from django.utils.translation import gettext_lazy as _
-
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
