@@ -4,8 +4,70 @@ services:
   web:
     container_name: django
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn homepage.wsgi:application --bind 0.0.0.0:8000 --workers=4
     ports:
       - 8000:8000
+    networks:
+      - homepage
     environment:
       - DEV_MODE=True
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME}
+      - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}
+      - DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL}
+      - DATABASE=${DATABASE}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - EMAIL_CONTACT_ADDRESS={$EMAIL_CONTACT_ADDRESS}
+      - DEFAULT_FROM_EMAIL={${DEFAULT_FROM_EMAIL}}
+      - MEDIA_URL=http://media.example.com:1337/
+      - MEDIA_ROOT=/var/www/media
+      - STATIC_URL=http://media.example.com:1337/static/
+      - STATIC_ROOT=/static/
+    depends_on:
+      - db
+    volumes:
+      - media:/var/www/media
+      - static:/home/app/web/static
+  db:
+    container_name: postgresdb
+    image: postgres:latest
+    restart: always
+    #command: psql $POSTGRES_DB < /var/homepage/db_import.sql
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
+    networks:
+      - homepage
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      #- ./homepage/db_import.sql:/docker-entrypoint-initdb.d/db_import.sql
+
+  nginx:
+    container_name: nginx
+    image: nginx:mainline-alpine
+    restart: always
+    ports:
+      - 1337:80
+    volumes:
+      - ./docker/nginx:/etc/nginx/conf.d
+      - media:/var/www/media
+      - static:/var/www/media/static
+    depends_on:
+      - web
+volumes:
+  postgres-data:
+  media:
+  static:
+
+networks:
+  homepage:
