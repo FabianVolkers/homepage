@@ -1,19 +1,20 @@
-import uuid
-import os
 import datetime
+import os
+import uuid
 
-from django.db import models
-from django.core.mail import send_mail, EmailMessage, BadHeaderError, EmailMultiAlternatives
 from django.conf import settings
+from django.core.mail import (BadHeaderError, EmailMessage,
+                              EmailMultiAlternatives, send_mail)
+from django.db import models
+from django.http import QueryDict
+from django.shortcuts import render
 from django.template.loader import get_template, render_to_string
+from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-from django.shortcuts import render
-from django.http import QueryDict
-from django.urls import reverse
 
-from .validators import *
 from .translations import filter_translations
+from .validators import *
 
 """
 A couple of hard coded choices for the database models.
