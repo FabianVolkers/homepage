@@ -2,7 +2,6 @@ import uuid
 import os
 import datetime
 
-
 from django.db import models
 from django.core.mail import send_mail, EmailMessage, BadHeaderError, EmailMultiAlternatives
 from django.conf import settings
@@ -12,12 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from django.shortcuts import render
 
 from .validators import *
-"""
-TODO:
-- Link abstract base class
-- AbstractTranslatable BaseEntry with commonEntry and TranslationGroup
-
-"""
+from .translations import filter_translations
 
 views = [
     ('portfolio:detail', 'Detail View'),
@@ -341,6 +335,7 @@ class Contact(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     email_address = models.EmailField()
     email_confirmed = models.BooleanField(default=False)
+    name = models.CharField(max_length=64, null=True)
 
     def __str__(self):
         return self.email_address
@@ -352,15 +347,24 @@ class Contact(models.Model):
             url = f'{settings.PROTO}://{settings.HOST}/contact/confirm-email/{self.id}/{token}'
         print(url)
 
-        email = render_to_string(
-            'portfolio/email_confirmation.html', context={'user': {'confirmation_url': url}})
-        print(email)
+        pages = filter_translations(
+            Page.objects.all().select_related('common'), 'en').order_by('common__footer_position')
+
+        context = {
+            'pages': pages,
+            'footerlinks': FooterLink.objects.order_by('position'),
+            'user': {'confirmation_url': url}
+        }
+
+        html_email = render_to_string(
+            'portfolio/email_confirmation.html', context=context)
+        print(html_email)
         send_mail(
             subject='Please Confirm your email address',
-            from_email='noreply@fabianvolkers.com',
+            from_email="Fabian Volkers <noreply@fabianvolkers.com>",
             recipient_list=[self.email_address],
-            message='Click here to confirm your email address',
-            html_message=f"""<p>Click <a href='{url}'>here</a> to confirm your email address</p>""",
+            message=f'Use this link to confirm your email address {url}',
+            html_message=html_email,
             fail_silently=False
         )
 
@@ -377,22 +381,30 @@ class Message(models.Model):
         return f"{self.contact.email_address} - {self.subject}"
 
     def send(self):
-        email = EmailMultiAlternatives(
-            subject=self.subject,
-            from_email='noreply@fabianvolkers.com',
-            reply_to=[self.contact.email_address],
-            to=[settings.EMAIL_CONTACT_ADDRESS],
-            body=self.content
-        )
 
-        email_template = get_template('portfolio/contact_email.html')
+        email_template = get_template('portfolio/email_contact.html')
+
         context = {
             'from': self.contact.email_address,
+            'name': self.contact.name,
             'subject': self.subject,
             'message': self.content
         }
+
         html_message = email_template.render(context=context)
 
+        email = EmailMultiAlternatives(
+            subject=self.subject,
+            from_email="Fabian Volkers <noreply@fabianvolkers.com>",
+            to=[settings.EMAIL_CONTACT_ADDRESS],
+            body=self.content,
+            headers={
+                'Sender': 'noreply@fabianvolkers.com',
+                'From': f'{self.contact.name} via fabianvolkers.com < {self.contact.email_address} >',
+                'Reply-To': f'{self.contact.name} < {self.contact.email_address} >',
+                'To': f'Fabian Volkers < {settings.EMAIL_CONTACT_ADDRESS} >'
+            }
+        )
         email.attach_alternative(html_message, 'text/html')
         email.send(fail_silently=False)
 
