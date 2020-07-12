@@ -4,14 +4,17 @@
         <p>{% trans "Send me a message" %}...</p>
         <form action="{% url 'portfolio:contact' %}" method="post" id='contact-form'>
             {% csrf_token %}
+            <label for="name">{% trans "Name" %}</label><br>
+            <input type="text" name="name" id="name" placeholder="Ada Lovelace">
+            <br>
             <label for="email">{% trans "Email Address" %}</label><br>
-            <input type="email" name="email" id="email" value="fabian.volkers+test@gmail.com">
+            <input type="email" name="email" id="email" placeholder="ada.lovelace@example.com">
             <br>
             <label for="subject">{% trans "Subject" %}</label><br>
-            <input type="text" name="subject" id="subject" value="{% trans "Subject" %}">
+            <input type="text" name="subject" id="subject" placeholder="{% trans "Subject" %}">
             <br>
             <label for="message">{% trans "Message" %}</label><br>
-            <textarea name="message" id="message" value="{% trans "Enter your message here" %}..." form='contact-form'></textarea>
+            <textarea name="message" id="message" placeholder="{% trans "Enter your message here" %}..." form='contact-form'></textarea>
             <br>
 
 
