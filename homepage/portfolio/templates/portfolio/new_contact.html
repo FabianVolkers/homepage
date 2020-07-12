@@ -1,4 +1,5 @@
 {% extends 'portfolio/base_page.html' %}
+{% load i18n %}
 {% block content %}
 <h3>{{ contactresponse.name }}</h3>
 <p>{{ contactresponse.message }}</p>
@@ -10,10 +11,12 @@
 <input type='submit' value="{{ contactresponse.common.action.name }}">
 </form>
 {% endif %}
+{% if messages %}
+<h3>{% trans "These messages have been sent" %}</h3>
+{% endif %}
 {% for message in messages %}
 <h4>{{ message.subject }}</h4>
-<h5>{{ message.date_sent }}</h5>
 <p>{{ message.content }}</p>
-
+<hr>
 {% endfor %}
 {% endblock content %}
