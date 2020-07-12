@@ -5,24 +5,33 @@ FROM python:3.7.7
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-# Make a new directory to put our code in.
-RUN mkdir /code
+RUN apt-get update \
+    && apt-get install -y netcat
 
-# Change the working directory. 
-# Every command after this will be run from the /code directory.
-WORKDIR /code
+# Create an app user in the app group. 
+RUN useradd --user-group --create-home --no-log-init --shell /bin/bash app
 
-# Copy the requirements.txt file.
-COPY ./requirements.txt /code/
+ENV APP_HOME=/home/app/web
 
-# Upgrade pip
+# Change the workdir.
+WORKDIR $APP_HOME
+
+COPY requirements.txt $APP_HOME
 RUN pip install --upgrade pip
-
-# Install the requirements.
 RUN pip install -r requirements.txt
 
 # For media serving in dev mode, remove in production
-RUN pip install Pillow
+#RUN pip install Pillow
+
+RUN mkdir -p $APP_HOME/static
 
 # Copy the rest of the code. 
-COPY ./homepage /code/
+COPY ./homepage $APP_HOME
+
+RUN chown -R app:app $APP_HOME
+
+#COPY ./homepage/portfolio/static /var/www/media/static
+
+USER app:app
+
+ENTRYPOINT ["/home/app/web/entrypoint.sh"]
