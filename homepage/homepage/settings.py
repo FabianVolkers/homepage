@@ -24,6 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 DEV_MODE = os.getenv('DEV_MODE', False)
+DATABASE = os.getenv('DATABASE', 'sqlite')
 
 if DEV_MODE:
     PROTO = 'http'
@@ -31,17 +32,48 @@ if DEV_MODE:
     PORT = '8000'
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    if DATABASE == 'sqlite':
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            }
         }
-    }
+    elif DATABASE == 'postgres':
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": os.getenv('POSTGRES_DB'),
+                "USER": os.getenv('POSTGRES_USER'),
+                "PASSWORD": os.getenv('POSTGRES_PASSWORD'),
+                "HOST": os.getenv('DATABASE_HOST'),
+                "PORT": os.getenv('DATABASE_PORT'),
+            }
+        }
 else:
     PROTO = 'https'
     HOST = os.getenv('HOST')
     MEDIA_URL = f'{PROTO}://media.{HOST}'
     MEDIA_ROOT = '/var/www/media'
+    if DATABASE == 'sqlite':
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            }
+        }
+    elif DATABASE == 'postgres':
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": os.getenv('POSTGRES_DB'),
+                "USER": os.getenv('POSTGRES_USER'),
+                "PASSWORD": os.getenv('POSTGRES_PASSWORD'),
+                "HOST": os.getenv('DATABASE_HOST'),
+                "PORT": os.getenv('DATABASE_PORT'),
+            }
+        }
+    }
 
 
 # Quick-start development settings - unsuitable for production
