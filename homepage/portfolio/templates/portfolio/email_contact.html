@@ -1,0 +1,9 @@
+{% extends 'portfolio/base_email.html' %}
+{% block content %}
+
+<h4><a href="mailto:{{ from }}">{{ name }}</h4>
+<h3>{{ subject }}</h3>
+<hr>
+<p>{{ message }}</p>
+
+{% endblock content %}

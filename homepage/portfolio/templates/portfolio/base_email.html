@@ -1,7 +1,12 @@
 <!DOCTYPE html>
+
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
 {% get_language_info for LANGUAGE_CODE as lang %}
+
+{% load inlinecss %}
+{% inlinecss "portfolio/email.css" %}
+
 <html lang="{{ LANGUAGE_CODE }}">
 
 <head>
@@ -11,10 +16,241 @@
     <title>{% block title %}Fabian Volkers{% endblock title %}</title>
     <meta name="description" content="{% block description %}Fabian Volkers' Portfolio{% endblock description %}">
     <meta name="author" content="Fabian Volkers">
+{% comment %}     <style>
+        body {
+            margin: 0;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            row-gap: 20px;
+            min-height: 100vh;
+            font-family: Montserrat, sans-serif;
+        }
 
+        h1,
+        h2,
+        h4 {
+            font-weight: 400;
+        }
+
+        nav {
+            max-width: 1720px;
+            margin: 0 auto;
+
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: .3s all ease-in-out;
+        }
+
+        nav a:hover {
+            opacity: .7;
+        }
+
+        nav a:visited {
+            color: white;
+        }
+
+        .nav-container {
+            width: 100%;
+            background-color: black;
+            grid-row: 1;
+        }
+
+        .nav-container i {
+            color: white;
+            font-size: 50px;
+        }
+
+
+        .logo {
+            grid-column: 2;
+            font-size: 40px;
+            padding: 1rem;
+        }
+
+        #content {
+            display: grid;
+            padding: 15vh 10vw;
+            grid-row: 2;
+
+
+        }
+
+        #content a {
+            text-decoration: none;
+        }
+
+        #content a:hover {
+            text-decoration: underline;
+        }
+
+        #content a:visited {
+            color: black;
+        }
+
+
+
+
+        footer {
+            width: 100%;
+            margin: 0 auto;
+            background-color: black;
+            color: white;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-row: 3;
+            padding-bottom: 20px;
+
+        }
+
+        footer h4 {
+            text-align: left;
+            padding-left: 15vw;
+            font-size: 20px;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            transition: .3s all ease-in-out;
+
+        }
+
+        footer a:hover {
+            opacity: .7;
+        }
+
+        footer a:visited {
+            color: white;
+        }
+
+        footer ul {
+            list-style: none;
+            padding-left: 40%;
+            padding-inline-start: 15vw;
+        }
+
+        footer i {
+            padding-right: 10px;
+        }
+
+        #footer-left {
+            grid-column: 1;
+        }
+
+        #footer-right {
+            grid-column: 3;
+        }
+
+
+        #footer-center {
+            grid-column: 2;
+        }
+
+
+
+        /************************************************************************************************/
+        /************************************************************************************************/
+        /************************************************************************************************/
+        /************************************************************************************************/
+        /************************************************************************************************/
+        /************************************************************************************************/
+
+
+        /** Mobile styles: max 700px **/
+
+
+        @media only screen and (max-width: 900px) {
+            :root {
+                --social-circle-a-d: 15vw;
+                --social-circle-d: 35vw;
+            }
+
+            h1 {
+                font-size: 40px;
+            }
+
+            h2 {
+                font-size: 35px;
+            }
+
+            h4 {
+                font-size: 25px;
+            }
+
+            p {
+                font-size: 20px;
+            }
+
+            label {
+                font-size: 25px;
+            }
+
+
+
+            .logo {
+
+                font-size: 35px;
+                padding: 1rem;
+            }
+
+            #content {
+                padding: 0 2vw;
+            }
+
+            .collection-container {
+                grid-template-columns: 1fr;
+                column-gap: 5vw;
+            }
+
+            .column-2 {
+                grid-column: 1;
+            }
+
+            .column-3 {
+                grid-column: 1;
+            }
+
+            .collection-item {
+                width: 90%;
+
+            }
+
+            .collection-item img {
+                max-width: 80vw;
+                z-index: 200;
+            }
+
+
+            #footer-left,
+            #footer-right,
+            #footer-center {
+                grid-column: 1;
+                width: 100vw;
+                font-size: 20px;
+
+            }
+
+            footer h4 {
+                text-align: left;
+                padding-left: 10px;
+            }
+
+            footer li {
+                padding: 10px 0 10px 30px;
+            }
+
+        }
+    </style> {% endcomment %}
+    <!--
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'portfolio/style.css' %}">
-
+-->
     <script src="https://kit.fontawesome.com/0d7dc3f746.js" crossorigin="anonymous"></script>
 </head>
 
@@ -22,12 +258,7 @@
     {% block navbar %}
     <div class="nav-container">
         <nav>
-            <input type="checkbox" id="nav-toggle">
-            <label for="nav-toggle" class="burger-menu">
-                <i class="fas fa-bars"></i>
-            </label>
-
-            <a href="/" class="logo">Fabian Volkers</a>
+            <a href="https://fabianvolkers.com" class="logo">Fabian Volkers</a>
         </nav>
     </div>
     {% endblock navbar %}
@@ -44,7 +275,8 @@
                 {% for page in pages %}
                 {% if page.common.footer_link == True%}
                 <li>
-                    <a href="{% url page.common.page_type.view_name page.slug %}">{{ page.name }}</a>
+                    <a
+                        href="https://fabianvolkers.com{% url page.common.page_type.view_name page.slug %}">{{ page.name }}</a>
                 </li>
                 {% endif %}
                 {% endfor %}
@@ -54,10 +286,10 @@
             <h4>Legal</h4>
             <ul>
                 <li>
-                    <a href={% url 'portfolio:page' 'imprint' %}>Imprint</a>
+                    <a href="https://fabianvolkers.com{% url 'portfolio:page' 'imprint' %}">Imprint</a>
                 </li>
                 <li>
-                    <a href={% url 'portfolio:page' 'privacy' %}>Privacy</a>
+                    <a href="https://fabianvolkers.com{% url 'portfolio:page' 'privacy' %}">Privacy</a>
                 </li>
             </ul>
         </div>
@@ -77,3 +309,4 @@
 </body>
 
 </html>
+{% endinlinecss %}
