@@ -13,6 +13,8 @@ from django.views.generic.list import MultipleObjectMixin
 from django.core.exceptions import *
 from importlib import import_module
 
+from .translations import filter_translations
+
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 s = SessionStore()
 # from django.contrib.auth.tokens import default_token_generator
@@ -250,6 +252,10 @@ class ContactView(BaseContext, generic.View):
             context['contactresponse'] = filter_translations(
                 queryset, lang).first()
 
+            if response_slug == 'confirmed' or response_slug == 'thanks':
+                context['messages'] = Message.objects.filter(
+                    contact__id=contact_id, sent=False)
+
         if contact_id:
             contact = get_object_or_404(Contact, id=contact_id)
 
@@ -294,13 +300,14 @@ class ContactView(BaseContext, generic.View):
             response_slug = ''
 
         if response_slug == '':
+            name = request.POST['name']
             email = request.POST['email']
             subject = request.POST['subject']
             content = request.POST['message']
             try:
                 contact = Contact.objects.get(email_address=email)
             except Contact.DoesNotExist:
-                contact = Contact(email_address=email)
+                contact = Contact(email_address=email, name=name)
                 contact.save()
                 token = account_activation_token.make_token(contact)
                 contact.send_confirmation_email(token)
@@ -316,10 +323,9 @@ class ContactView(BaseContext, generic.View):
 
             if message.contact.email_confirmed:
                 message.send()
-                return HttpResponseRedirect(
-                    reverse(
-                        'portfolio:contact',
-                        args=['thanks']))
+                url = reverse('portfolio:contact', args=['thanks'])
+                return HttpResponseRedirect(f"{url}?{QueryDict(f'id={contact.id}').urlencode()}")
+
             else:
                 url = reverse('portfolio:contact', args=['unconfirmed'])
                 return HttpResponseRedirect(f"{url}?{QueryDict(f'id={contact.id}').urlencode()}")
@@ -361,6 +367,14 @@ class ContactView(BaseContext, generic.View):
                 print('invalid contact id, skipping contact')
 
         return context
+
+
+"""Email not being displayed correctly? View in browser"""
+
+
+class EmailView(BaseContext, generic.DetailView):
+    model = Message
+    template_name = 'portfolio/email_confirmation'
 
 
 """ 
@@ -463,31 +477,3 @@ def check_for_language(lang_code):
         if language[0] == lang_code:
             supported_lang = True
     return supported_lang
-
-
-"""
-Helper function for filtering querysets for current language,
-falling back to default language if translations does not exist
-
-"""
-
-
-def filter_translations(queryset, lang):
-
-    if lang == settings.LANGUAGE_CODE:
-
-        queryset = queryset.filter(lang=lang)
-
-    else:
-        translations = queryset.filter(lang=lang)
-
-        # Fallback to default language
-        fallback = queryset.exclude(
-            common__id__in=translations.values('common')
-        ).filter(
-            lang=settings.LANGUAGE_CODE
-        )
-
-        queryset = fallback.union(translations)
-
-    return queryset
