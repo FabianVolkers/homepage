@@ -234,7 +234,7 @@ contact/messages
 class ContactView(BaseContext, generic.View):
     model = ContactResponse
     context_object_name = 'contactresponses'
-    template_name = 'portfolio/new_contact.html'
+    template_name = 'portfolio/contact.html'
 
     def get(self, request, *args, **kwargs):
 
@@ -290,7 +290,7 @@ class ContactView(BaseContext, generic.View):
             raise Http404('Contact view not found')
 
         # Finally, render template with context
-        return render(request, 'portfolio/new_contact.html', context=context)
+        return render(request, 'portfolio/contact.html', context=context)
 
     def post(self, request, *args, **kwargs):
 
