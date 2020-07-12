@@ -19,6 +19,9 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+DEFAULTS = {
+
+}
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,8 +33,9 @@ if DEV_MODE:
     PROTO = 'http'
     HOST = '127.0.0.1'
     PORT = '8000'
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+    MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
+    MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(BASE_DIR, 'media/'))
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     if DATABASE == 'sqlite':
         DATABASES = {
             'default': {
@@ -53,8 +57,8 @@ if DEV_MODE:
 else:
     PROTO = 'https'
     HOST = os.getenv('HOST')
-    MEDIA_URL = f'{PROTO}://media.{HOST}'
-    MEDIA_ROOT = '/var/www/media'
+    MEDIA_URL = os.getenv('MEDIA_URL', f'{PROTO}://media.{HOST}')
+    MEDIA_ROOT = os.getenv('MEDIA_ROOT', '/var/www/media')
     if DATABASE == 'sqlite':
         DATABASES = {
             'default': {
@@ -73,9 +77,13 @@ else:
                 "PORT": os.getenv('DATABASE_PORT'),
             }
         }
-    }
 
+    # Static files (CSS, JavaScript, Images)
+    # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATIC_URL = os.getenv('STATIC_URL', '/static/')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -186,12 +194,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
-
-STATIC_URL = '/static/'
-STATIC_ROOT = f'{BASE_DIR}/portfolio/static/'
 
 # Emails
 EMAIL_USE_TLS = True
