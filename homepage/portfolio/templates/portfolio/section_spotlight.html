@@ -3,7 +3,7 @@
 <div class="spotlight-container">
     {% for spotlight in collectionitems %}
     {% if spotlight.common.spotlight == True %}
-    <img src='{{ MEDIA_URL }}/{{ spotlight.common.image }}' draggable="false" class="spotlight-img"
+    <img src='{{ MEDIA_URL }}{{ spotlight.common.image }}' draggable="false" class="spotlight-img"
         alt-text="{{ spotlight.image_alttext }}">
     {% for item_section in sections %}
     {% if item_section.common.id == spotlight.common.parent_section.id %}
