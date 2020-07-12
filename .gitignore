@@ -8,3 +8,5 @@ media
 .DS_Store
 w3.css
 todo.md
+datadump.json
+db_import.sql
