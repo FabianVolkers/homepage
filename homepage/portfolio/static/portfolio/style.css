@@ -480,7 +480,13 @@ footer i {
     grid-column: 2;
 }
 
+.item-img {
+    max-width: 100%;
+}
 
+.item-description {
+    padding: 5vh 0;
+}
 
 /************************************************************************************************/
 /************************************************************************************************/
@@ -543,6 +549,8 @@ footer i {
 
         font-size: 35px;
         padding: 1rem;
+        margin-left: 20px;
+        max-width: 55vw;
     }
 
     #nav-toggle:checked~.left-menu {
