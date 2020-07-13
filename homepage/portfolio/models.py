@@ -434,9 +434,9 @@ class Contact(models.Model):
         url = reverse('portfolio:contact', args=['confirm'])
         url = f"{url}?{QueryDict(f'id={self.id}&token={token}').urlencode()}"
         if settings.DEV_MODE:
-            url = f'{settings.PROTO}://{settings.HOST}:{settings.PORT}/{url}'
+            url = f'{settings.PROTO}://{settings.HOST[0]}:{settings.PORT}/{url}'
         else:
-            url = f'{settings.PROTO}://{settings.HOST}/{url}'
+            url = f'{settings.PROTO}://{settings.HOST[0]}/{url}'
 
         pages = Page.objects.all().select_related('common')
         pages = filter_translations(
