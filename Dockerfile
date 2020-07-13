@@ -30,6 +30,7 @@ COPY ./homepage $APP_HOME
 
 RUN chown -R app:app $APP_HOME
 
+RUN chown -R app:app /var/www/media
 #COPY ./homepage/portfolio/static /var/www/media/static
 
 USER app:app
