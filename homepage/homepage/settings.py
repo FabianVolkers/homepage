@@ -15,6 +15,7 @@ import random
 
 from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
+from get_docker_secret import get_docker_secret
 
 # Load environment variables from .env file
 load_dotenv()
@@ -48,11 +49,11 @@ if DEV_MODE:
         DATABASES = {
             "default": {
                 "ENGINE": "django.db.backends.postgresql",
-                "NAME": os.getenv('POSTGRES_DB'),
-                "USER": os.getenv('POSTGRES_USER'),
-                "PASSWORD": os.getenv('POSTGRES_PASSWORD'),
-                "HOST": os.getenv('DATABASE_HOST'),
-                "PORT": os.getenv('DATABASE_PORT'),
+                "NAME": get_docker_secret('postgres_db'),
+                "USER": get_docker_secret('postgres_user'),
+                "PASSWORD": get_docker_secret('postgres_password'),
+                "HOST": get_docker_secret('database_host'),
+                "PORT": get_docker_secret('database_port'),
             }
         }
 else:
@@ -70,13 +71,23 @@ else:
         DATABASES = {
             "default": {
                 "ENGINE": "django.db.backends.postgresql",
+                "NAME": get_docker_secret('postgres_db'),
+                "USER": get_docker_secret('postgres_user'),
+                "PASSWORD": get_docker_secret('postgres_password'),
+                "HOST": get_docker_secret('database_host'),
+                "PORT": get_docker_secret('database_port'),
+            }
+        }
+        """ DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
                 "NAME": os.getenv('POSTGRES_DB'),
                 "USER": os.getenv('POSTGRES_USER'),
                 "PASSWORD": os.getenv('POSTGRES_PASSWORD'),
                 "HOST": os.getenv('DATABASE_HOST'),
                 "PORT": os.getenv('DATABASE_PORT'),
             }
-        }
+        } """
 
     # Static files (CSS, JavaScript, Images)
     # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -88,9 +99,11 @@ STATIC_URL = os.getenv('STATIC_URL', '/static/')
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', ''.join(random.SystemRandom().choice(
-    'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)))
+""" SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', ''.join(random.SystemRandom().choice(
+    'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50))) """
 
+SECRET_KEY = get_docker_secret('django_secret_key', default=''.join(random.SystemRandom().choice(
+    'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DEV_MODE
 
@@ -194,12 +207,18 @@ USE_TZ = True
 
 # Emails
 EMAIL_USE_TLS = True
-EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = os.getenv("EMAIL_PORT", 587)
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-EMAIL_CONTACT_ADDRESS = os.getenv('EMAIL_CONTACT_ADDRESS')
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+EMAIL_HOST = get_docker_secret('email_host')
+EMAIL_HOST_USER = get_docker_secret('email_host_user')
+EMAIL_HOST_PASSWORD = get_docker_secret('email_host_password')
+EMAIL_PORT = get_docker_secret('email_port', default=587)
+EMAIL_CONTACT_ADDRESS = get_docker_secret('email_contact_address')
+DEFAULT_FROM_EMAIL = get_docker_secret('default_from_email')
+#EMAIL_HOST = os.getenv("EMAIL_HOST")
+#EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+#EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+#EMAIL_PORT = os.getenv("EMAIL_PORT", 587)
+#EMAIL_CONTACT_ADDRESS = os.getenv('EMAIL_CONTACT_ADDRESS')
+#DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
 MAX_PAGES = 10
 MAX_SECTIONS = 10
