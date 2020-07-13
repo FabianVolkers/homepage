@@ -62,10 +62,10 @@ if DEV_MODE:
             }
         }
 else:
-    print('Production Settings')
+
     PROTO = 'https'
     MEDIA_URL = os.getenv('MEDIA_URL', f'{PROTO}://media.{HOST[0]}')
-    MEDIA_ROOT = os.getenv('MEDIA_ROOT', '/var/www/media/')
+    MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(BASE_DIR, 'media/'))
     if DATABASE == 'sqlite':
         DATABASES = {
             'default': {
