@@ -95,9 +95,11 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', ''.join(random.SystemRandom().choice
 DEBUG = DEV_MODE
 
 ALLOWED_HOSTS = [
+    'fabianvolkers.com',
+    'www.fabianvolkers.com',
     HOST,
-    '0.0.0.0'
-]
+    '0.0.0.0',
+] + os.getenv('HOST', '127.0.0.1').split(",")
 
 
 # Application definition
