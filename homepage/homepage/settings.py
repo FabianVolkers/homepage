@@ -30,7 +30,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEV_MODE = os.getenv('DEV_MODE', False)
 DATABASE = os.getenv('DATABASE', 'sqlite')
 HOST = os.getenv('HOST', '127.0.0.1').split(",")
-
+print("DEV_MODE:", DEV_MODE)
 if DEV_MODE:
     PROTO = 'http'
 
