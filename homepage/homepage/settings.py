@@ -26,12 +26,17 @@ DEFAULTS = {
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
+# Load dev mode env var and cast as boolean
 DEV_MODE = os.getenv('DEV_MODE', False)
+if DEV_MODE.lower() == 'true':
+    DEV_MODE = True
+else:
+    DEV_MODE = False
+
 DATABASE = os.getenv('DATABASE', 'sqlite')
 HOST = os.getenv('HOST', '127.0.0.1').split(",")
-print("DEV_MODE:", DEV_MODE)
-if DEV_MODE == True:
+
+if DEV_MODE:
     PROTO = 'http'
 
     PORT = '8000'
@@ -135,7 +140,7 @@ STATIC_URL = os.getenv('STATIC_URL', '/static/')
 SECRET_KEY = get_docker_secret('django_secret_key', default=''.join(random.SystemRandom().choice(
     'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)))
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = DEV_MODE
+DEBUG = (DEV_MODE == True)
 
 ALLOWED_HOSTS = HOST
 
