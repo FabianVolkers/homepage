@@ -12,7 +12,7 @@ urlpatterns = [
             views.ContactView.as_view(), name="contact"),
     re_path(r'^(?P<section_slug>[\w|-]+)/(?P<collectionitem_slug>[\w|-]+)',
             views.DetailView.as_view(), name='detail'),
-    re_path(r'^(?!(media|privacy|imprint]))(?P<section_slug>[\w|-]+$)',
+    re_path(r'^(?!(admin|media|privacy|imprint]))(?P<section_slug>[\w|-]+$)',
             views.CollectionView.as_view(), name='collection'),
     re_path(r'^(?!(admin|media|projects|photography))(?P<page_name>[\w|-]{0,}$)',
             views.PageView.as_view(), name='page'),
