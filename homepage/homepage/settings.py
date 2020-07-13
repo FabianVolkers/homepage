@@ -57,6 +57,7 @@ if DEV_MODE:
             }
         }
 else:
+    print('Production Settings')
     PROTO = 'https'
     MEDIA_URL = os.getenv('MEDIA_URL', f'{PROTO}://media.{HOST[0]}')
     MEDIA_ROOT = os.getenv('MEDIA_ROOT', '/var/www/media/')
