@@ -28,14 +28,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEV_MODE = os.getenv('DEV_MODE', False)
 DATABASE = os.getenv('DATABASE', 'sqlite')
+HOST = os.getenv('HOST', '127.0.0.1').split(",")
 
 if DEV_MODE:
     PROTO = 'http'
-    HOST = '127.0.0.1'
+
     PORT = '8000'
     MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
     MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(BASE_DIR, 'media/'))
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
     if DATABASE == 'sqlite':
         DATABASES = {
             'default': {
@@ -56,9 +57,8 @@ if DEV_MODE:
         }
 else:
     PROTO = 'https'
-    HOST = os.getenv('HOST')
-    MEDIA_URL = os.getenv('MEDIA_URL', f'{PROTO}://media.{HOST}')
-    MEDIA_ROOT = os.getenv('MEDIA_ROOT', '/var/www/media')
+    MEDIA_URL = os.getenv('MEDIA_URL', f'{PROTO}://media.{HOST[0]}')
+    MEDIA_ROOT = os.getenv('MEDIA_ROOT', '/var/www/media/')
     if DATABASE == 'sqlite':
         DATABASES = {
             'default': {
@@ -81,8 +81,8 @@ else:
     # Static files (CSS, JavaScript, Images)
     # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = os.getenv('STATIC_URL', '/static/')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -94,12 +94,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', ''.join(random.SystemRandom().choice
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DEV_MODE
 
-ALLOWED_HOSTS = [
-    'fabianvolkers.com',
-    'www.fabianvolkers.com',
-    HOST,
-    '0.0.0.0',
-] + os.getenv('HOST', '127.0.0.1').split(",")
+ALLOWED_HOSTS = HOST
 
 
 # Application definition
@@ -200,7 +195,7 @@ USE_TZ = True
 # Emails
 EMAIL_USE_TLS = True
 EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = 587
+EMAIL_PORT = os.getenv("EMAIL_PORT", 587)
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_CONTACT_ADDRESS = os.getenv('EMAIL_CONTACT_ADDRESS')
