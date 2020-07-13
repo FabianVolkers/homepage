@@ -22,26 +22,26 @@ services:
       - postgres_db
       - postgres_password
     environment:
-      - DEV_MODE=True
-      - DJANGO_SECRET_KEY=/var/run/django_secret_key
-      - DJANGO_SUPERUSER_USERNAME=django_admin
-      - DJANGO_SUPERUSER_PASSWORD=/var/run/django_superuser_password
-      - DJANGO_SUPERUSER_EMAIL=admin@fabianvolkers.com
-      - DATABASE=postgres
-      - POSTGRES_DB=/var/run/postgres_db
-      - POSTGRES_USER=homepage
-      - POSTGRES_PASSWORD=/var/run/postgres_password
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      - EMAIL_HOST=/var/run/email_host
-      - EMAIL_HOST_USER=/var/run/email_host_user
-      - EMAIL_HOST_PASSWORD=/var/run/email_host_password
-      - EMAIL_CONTACT_ADDRESS=/var/run/email_contact_address
-      - DEFAULT_FROM_EMAIL=/var/run/default_from_email
-      - MEDIA_URL=https://media.fabianvolkers.com/
-      - MEDIA_ROOT=/var/www/media
-      - STATIC_URL=https://media.fabianvolkers.com/static/
-
+      HOST: fabianvolkers.com,www.fabianvolkers.com
+      DEV_MODE: "True"
+      DJANGO_SECRET_KEY: /var/run/django_secret_key
+      DJANGO_SUPERUSER_USERNAME: django_admin
+      DJANGO_SUPERUSER_PASSWORD: /var/run/django_superuser_password
+      DJANGO_SUPERUSER_EMAIL: /var/run/django_superuser_email
+      DATABASE: postgres
+      POSTGRES_DB: /var/run/postgres_db
+      POSTGRES_USER: homepage
+      POSTGRES_PASSWORD: /var/run/postgres_password
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      EMAIL_HOST: /var/run/email_host
+      EMAIL_HOST_USER: /var/run/email_host_user
+      EMAIL_HOST_PASSWORD: /var/run/email_host_password
+      EMAIL_CONTACT_ADDRESS: /var/run/email_contact_address
+      DEFAULT_FROM_EMAIL: /var/run/default_from_email
+      MEDIA_URL: https://media.fabianvolkers.com/
+      MEDIA_ROOT: /var/www/media
+      STATIC_URL: https://media.fabianvolkers.com/static/
     depends_on:
       - db
     volumes:
@@ -60,10 +60,10 @@ services:
         condition: on-failure
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.homepage-http.rule=Host(`fabianvolkers.com`, `www.fabianvolkers.com`)"
+        - "traefik.http.routers.homepage-http.rule=Host(`fabianvolkers.com`) || Host(`www.fabianvolkers.com`)"
         - "traefik.http.routers.homepage-http.entrypoints=web"
         - "traefik.http.routers.homepage-http.middlewares=redirect-web-to-websecure@internal"
-        - "traefik.http.routers.homepage-https.rule=Host(`fabianvolkers.com`, `www.fabianvolkers.com`)"
+        - "traefik.http.routers.homepage-https.rule=Host(`fabianvolkers.com`) || Host(`www.fabianvolkers.com`)"
         - "traefik.http.routers.homepage-https.entrypoints=websecure"
         - "traefik.http.routers.homepage-https.tls=true"
         - "traefik.http.routers.homepage-https.service=homepage"
@@ -78,9 +78,9 @@ services:
       - postgres_db
       - postgres_password
     environment:
-      - POSTGRES_DB=/var/run/postgres_db
-      - POSTGRES_USER=homepage
-      - POSTGRES_PASSWORD=/var/run/postgres_password
+      POSTGRES_DB_FILE: /var/run/secrets/postgres_db
+      POSTGRES_USER: homepage
+      POSTGRES_PASSWORD_FILE: /var/run/secrets/postgres_password
     ports:
       - 5432:5432
     networks:
