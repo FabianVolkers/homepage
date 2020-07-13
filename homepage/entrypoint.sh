@@ -21,9 +21,9 @@ python manage.py createsuperuser --no-input
 
 echo "\nImporting core data"
 python manage.py shell --command="from django.contrib.contenttypes.models import ContentType; ContentType.objects.all().delete()"
-python manage.py loaddata import_data.json
+python manage.py loaddata datadump.json
 
-echo "\nCollection static files"
+echo "\nCollecting static files"
 python manage.py collectstatic --noinput
 
 exec "$@"
