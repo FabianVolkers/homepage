@@ -436,7 +436,7 @@ class Contact(models.Model):
         if settings.DEV_MODE:
             url = f'{settings.PROTO}://{settings.HOST[0]}:{settings.PORT}/{url}'
         else:
-            url = f'{settings.PROTO}://{settings.HOST[0]}/{url}'
+            url = f'{settings.PROTO}://{settings.HOST[0]}{url}'
 
         pages = Page.objects.all().select_related('common')
         pages = filter_translations(
