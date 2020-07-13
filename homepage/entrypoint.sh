@@ -10,7 +10,9 @@ if [ "$DATABASE" = "postgres" ]; then
 
     echo "\nPostgreSQL started"
 fi
-
+export DJANGO_SUPERUSER_EMAIL=$(cat /var/run/secrets/django_superuser_email)
+export DJANGO_SUPERUSER_PASSWORD=$(cat /var/run/secrets/django_superuser_password)
+export DJANGO_SUPERUSER_EMAIL=$(cat /var/run/secrets/django_superuser_email)
 # Make migrations and migrate the database.
 echo "\nMaking migrations and migrating the database."
 python manage.py makemigrations portfolio --noinput 
