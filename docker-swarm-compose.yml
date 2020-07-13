@@ -1,0 +1,169 @@
+version: "3.3"
+
+services:
+  web:
+    hostname: django
+    image: fabiserv/homepage
+    command: gunicorn homepage.wsgi:application --bind 0.0.0.0:8000 --workers=4
+    ports:
+      - "8000"
+    networks:
+      - django
+      - traefik-public
+    secrets:
+      - django_secret_key
+      - django_superuser_email
+      - django_superuser_password
+      - default_from_email
+      - email_contact_address
+      - email_host
+      - email_host_password
+      - email_host_user
+      - postgres_db
+      - postgres_password
+    environment:
+      - DEV_MODE=True
+      - DJANGO_SECRET_KEY=/var/run/django_secret_key
+      - DJANGO_SUPERUSER_USERNAME=django_admin
+      - DJANGO_SUPERUSER_PASSWORD=/var/run/django_superuser_password
+      - DJANGO_SUPERUSER_EMAIL=admin@fabianvolkers.com
+      - DATABASE=postgres
+      - POSTGRES_DB=/var/run/postgres_db
+      - POSTGRES_USER=homepage
+      - POSTGRES_PASSWORD=/var/run/postgres_password
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - EMAIL_HOST=/var/run/email_host
+      - EMAIL_HOST_USER=/var/run/email_host_user
+      - EMAIL_HOST_PASSWORD=/var/run/email_host_password
+      - EMAIL_CONTACT_ADDRESS=/var/run/email_contact_address
+      - DEFAULT_FROM_EMAIL=/var/run/default_from_email
+      - MEDIA_URL=https://media.fabianvolkers.com/
+      - MEDIA_ROOT=/var/www/media
+      - STATIC_URL=https://media.fabianvolkers.com/static/
+
+    depends_on:
+      - db
+    volumes:
+      - media:/var/www/media
+      - static:/home/app/web/static
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+        #order: stop-first
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.homepage-http.rule=Host(`fabianvolkers.com`, `www.fabianvolkers.com`)"
+        - "traefik.http.routers.homepage-http.entrypoints=web"
+        - "traefik.http.routers.homepage-http.middlewares=redirect-web-to-websecure@internal"
+        - "traefik.http.routers.homepage-https.rule=Host(`fabianvolkers.com`, `www.fabianvolkers.com`)"
+        - "traefik.http.routers.homepage-https.entrypoints=websecure"
+        - "traefik.http.routers.homepage-https.tls=true"
+        - "traefik.http.routers.homepage-https.service=homepage"
+        - "traefik.http.routers.homepage-https.tls.certresolver=le"
+        - "traefik.http.services.homepage.loadbalancer.server.port=8000"
+  db:
+    hostname: db
+    image: postgres:latest
+    restart: always
+    #command: psql $POSTGRES_DB < /var/homepage/db_import.sql
+    secrets:
+      - postgres_db
+      - postgres_password
+    environment:
+      - POSTGRES_DB=/var/run/postgres_db
+      - POSTGRES_USER=homepage
+      - POSTGRES_PASSWORD=/var/run/postgres_password
+    ports:
+      - 5432:5432
+    networks:
+      - django
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      #- ./homepage/db_import.sql:/docker-entrypoint-initdb.d/db_import.sql
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+        #order: stop-first
+      restart_policy:
+        condition: on-failure
+  nginx:
+    hostname: nginx
+    image: nginx:mainline-alpine
+    restart: always
+    ports:
+      - 1337:80
+    volumes:
+      - ./docker/nginx:/etc/nginx/conf.d
+      - media:/var/www/media
+      - static:/var/www/media/static
+    depends_on:
+      - web
+    networks:
+      - traefik-public
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+        #order: stop-first
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.nginx-http.rule=Host(`media.fabianvolkers.com`)"
+        - "traefik.http.routers.nginx-http.entrypoints=web"
+        - "traefik.http.routers.nginx-http.middlewares=redirect-web-to-websecure@internal"
+        - "traefik.http.routers.nginx-https.rule=Host(`media.fabianvolkers.com`)"
+        - "traefik.http.routers.nginx-https.entrypoints=websecure"
+        - "traefik.http.routers.nginx-https.tls=true"
+        - "traefik.http.routers.nginx-https.service=nginx"
+        - "traefik.http.routers.nginx-https.tls.certresolver=le"
+        - "traefik.http.services.nginx.loadbalancer.server.port=80"
+
+volumes:
+  postgres-data:
+  media:
+  static:
+
+secrets:
+  django_secret_key:
+    external: true
+  django_superuser_email:
+    external: true
+  django_superuser_password:
+    external: true
+  default_from_email:
+    external: true
+  email_contact_address:
+    external: true
+  email_host:
+    external: true
+  email_host_password:
+    external: true
+  email_host_user:
+    external: true
+  postgres_db:
+    external: true
+  postgres_password:
+    external: true
+
+networks:
+  django:
+  traefik-public:
+    external: true
