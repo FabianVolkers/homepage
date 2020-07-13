@@ -3,14 +3,15 @@ version: "3"
 services:
   web:
     container_name: django
-    build: .
-    command: gunicorn homepage.wsgi:application --bind 0.0.0.0:8000 --workers=4
+    image: fabiserv/homepage
+    command: gunicorn homepage.wsgi:application --bind 127.0.0.1:8000 --workers=4
     ports:
       - 8000:8000
     networks:
       - homepage
       - traefik-public
     environment:
+      - HOST=fabianvolkers.com,www.fabianvolkers.com
       - DEV_MODE=True
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME}
@@ -30,7 +31,7 @@ services:
       - MEDIA_URL=http://media.example.com:1337/
       - MEDIA_ROOT=/var/www/media
       - STATIC_URL=http://media.example.com:1337/static/
-      - STATIC_ROOT=/static/
+
     depends_on:
       - db
     volumes:
