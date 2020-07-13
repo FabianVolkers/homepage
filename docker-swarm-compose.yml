@@ -78,9 +78,9 @@ services:
       - postgres_db
       - postgres_password
     environment:
-      - POSTGRES_DB=/var/run/postgres_db
+      - POSTGRES_DB_FILE=/var/run/postgres_db
       - POSTGRES_USER=homepage
-      - POSTGRES_PASSWORD=/var/run/postgres_password
+      - POSTGRES_PASSWORD_FILE=/var/run/postgres_password
     ports:
       - 5432:5432
     networks:
