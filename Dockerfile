@@ -24,14 +24,12 @@ RUN pip install -r requirements.txt
 #RUN pip install Pillow
 
 RUN mkdir -p $APP_HOME/static
-
+RUN mkdir -p $APP_HOME/media
 # Copy the rest of the code. 
 COPY ./homepage $APP_HOME
 
 RUN chown -R app:app $APP_HOME
 
-RUN mkdir -p /var/www/media
-RUN chown -R app:app /var/www/media
 #COPY ./homepage/portfolio/static /var/www/media/static
 
 USER app:app
