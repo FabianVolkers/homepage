@@ -13,6 +13,7 @@ import logging.config
 import os
 import random
 
+from django.utils.log import DEFAULT_LOGGING
 from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
 from get_docker_secret import get_docker_secret
@@ -94,38 +95,48 @@ else:
                 "PORT": os.getenv('DATABASE_PORT'),
             }
         } """
-    # Logging Configuration
 
-    # Clear prev config
-    LOGGING_CONFIG = None
+# Logging Configuration
+#LOGGING_CONFIG = None
+# Get loglevel from env
+LOGLEVEL = os.getenv('DJANGO_LOGLEVEL', 'info').upper()
 
-    # Get loglevel from env
-    LOGLEVEL = os.getenv('DJANGO_LOGLEVEL', 'info').upper()
-
-    logging.config.dictConfig({
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'console': {
-                'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(module)s %(process)d %(thread)d %(message)s',
-            },
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(module)s %(process)d %(thread)d %(message)s',
         },
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-                'formatter': 'console',
-            },
-        },
-        'loggers': {
-            '': {
-                'level': LOGLEVEL,
-                'handlers': ['console', ],
-            },
-        },
-    })
 
-    # Static files (CSS, JavaScript, Images)
-    # https://docs.djangoproject.com/en/3.0/howto/static-files/
+    },
+    'handlers': {
+        'console': {
+            'level': LOGLEVEL,
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
+    },
+    'loggers': {
+        '': {
+            'level': LOGLEVEL,
+            'handlers': ['console', ],
+        },
+        'portfolio': {
+            'level': LOGLEVEL,
+            'handlers': ['console', ],
+            'propagate': False,
+        },
+        'homepage': {
+            'level': LOGLEVEL,
+            'handlers': ['console', ],
+            'propagate': False,
+        },
+    },
+}
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
