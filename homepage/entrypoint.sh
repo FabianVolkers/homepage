@@ -10,9 +10,15 @@ if [ "$DATABASE" = "postgres" ]; then
 
     echo "\nPostgreSQL started"
 fi
-export DJANGO_SUPERUSER_EMAIL=$(cat /var/run/secrets/django_superuser_email)
-export DJANGO_SUPERUSER_PASSWORD=$(cat /var/run/secrets/django_superuser_password)
-#export DJANGO_SUPERUSER_EMAIL=$(cat /var/run/secrets/django_superuser_email)
+
+# Load DJANGO_SUPERUSER secrets into env vars, so createsuperuser command finds them
+if [ -e /var/run/secrets/django_superuser_email ]; then
+    echo "\nDocker secrets detected, loading super user secrets into env vars."
+
+    export DJANGO_SUPERUSER_EMAIL=$(cat /var/run/secrets/django_superuser_email)
+    export DJANGO_SUPERUSER_PASSWORD=$(cat /var/run/secrets/django_superuser_password)
+fi
+
 # Make migrations and migrate the database.
 echo "\nMaking migrations and migrating the database."
 python manage.py makemigrations portfolio --noinput 
