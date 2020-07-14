@@ -22,7 +22,7 @@ RUN pip install -r requirements.txt
 
 # Install Pillow if environment build arg is set to development
 ARG environment=production
-RUN if [ "x$environment" = "development" ]; then echo "\nInstalling Pillow to serve media files in development" pip install Pillow fi
+RUN if [ "x$environment" = "development" ]; then echo "\nInstalling Pillow to serve media files in development" pip install Pillow ; fi
 
 # Create directories for static and media files
 RUN mkdir -p $APP_HOME/static
