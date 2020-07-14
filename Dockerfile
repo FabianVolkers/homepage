@@ -20,9 +20,6 @@ COPY requirements.txt $APP_HOME
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# For media serving in dev mode, remove in production
-#RUN pip install Pillow
-
 RUN mkdir -p $APP_HOME/static
 RUN mkdir -p $APP_HOME/media/images
 # Copy the rest of the code. 
