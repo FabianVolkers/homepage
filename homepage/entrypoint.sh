@@ -1,4 +1,12 @@
 #!/bin/sh
+
+echo $DJANGO_ENVIRONMENT
+
+if [ "$DJANGO_ENVIRONMENT" = 'development' ]; then
+    echo '\nInstalling Pillow to serve media and static files'
+    pip install Pillow
+fi
+
 echo $DATABASE
 
 if [ "$DATABASE" = "postgres" ]; then
