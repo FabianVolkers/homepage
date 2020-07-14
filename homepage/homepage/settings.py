@@ -46,6 +46,10 @@ elif ENVIRONMENT == 'production' or ENVIRONMENT == 'staging':
     MEDIA_URL = os.getenv('MEDIA_URL', f'{PROTO}://media.{HOST[0]}')
     MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(BASE_DIR, 'media/'))
 
+elif ENVIRONMENT == 'production':
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+
 
 # Logging Configuration
 
@@ -193,8 +197,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -221,7 +223,6 @@ PYTZ = pytz.timezone(TIME_ZONE)
 
 USE_TZ = True
 
-
 # Emails
 EMAIL_USE_TLS = True
 EMAIL_HOST = get_docker_secret('email_host')
@@ -231,7 +232,12 @@ EMAIL_PORT = get_docker_secret('email_port', default=587)
 EMAIL_CONTACT_ADDRESS = get_docker_secret('email_contact_address')
 DEFAULT_FROM_EMAIL = get_docker_secret('default_from_email')
 
+# App settings
 MAX_PAGES = 10
 MAX_SECTIONS = 10
 MAX_NAVLINKS = 10
 MAX_FOOTERLINKS = 10
+
+# Admins and Managers for receiving error emails
+ADMINS = []
+MANAGERS = []
