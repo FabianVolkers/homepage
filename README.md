@@ -34,6 +34,8 @@ This portfolio page is built with Python and Django. Django was chosen for it's 
 
 The app is running live at [fabianvolkers.com](https://fabianvolkers.com). The Django app is running as a service inside a Docker Swarm, in a stack with a postgres database container and an nginx container for serving media and static files. On top of that, load balancing and proxying is handled by a Traefik instance inside the Swarm. Monitoring is setup using the django metrics exporter for prometheus. Prometheus and Grafana run inside the same swarm currently, due to the lack of financial resources for more servers. I'm also planning to connect it to my elastic instance.
 
+![](.github/.media/deployment-architecture.png)
+
 ## Run the App
 ### Docker-Compose
 #### Pull Docker Hub image
@@ -61,7 +63,7 @@ docker-compose up -d
 Alternatively you can uncomment the `build` tag and comment out the `image` tag, to build the container yourself. This will naturally only work if you have cloned this repository.
 
 ### Docker
-If you just want to check out the django app without worrying about postgres or nginx, you can just use the following command to get started. This will use a small sample sqlite db.
+If you just want to check out the django app without worrying about postgres or nginx, you can just use the following command to get started. This will use a small sample sqlite db. 
 ```bash
 docker run --publish 8000:8000 --detach --name homepage fabiserv/homepage:latest
 ```
