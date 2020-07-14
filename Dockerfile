@@ -20,14 +20,14 @@ COPY requirements.txt $APP_HOME
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+# Create directories for static and media files
 RUN mkdir -p $APP_HOME/static
 RUN mkdir -p $APP_HOME/media/images
+
 # Copy the rest of the code. 
 COPY ./homepage $APP_HOME
 
 RUN chown -R app:app $APP_HOME
-
-#COPY ./homepage/portfolio/static /var/www/media/static
 
 USER app:app
 
