@@ -2,6 +2,13 @@ __pycache__
 venv
 portfolio.code-workspace
 example.env
-REDAME.md
-tode.md
+README.md
+todo.md
 schema.sql
+docker-swarm-compose.yml
+docker-compose.yml
+LICENSE
+datadump.json
+import_data.json
+docker/
+.env
