@@ -3,16 +3,16 @@ version: "3"
 services:
   web:
     container_name: django
-    image: fabiserv/homepage
+    build: .
     command: gunicorn homepage.wsgi:application --bind 127.0.0.1:8000 --workers=4
     ports:
       - 8000:8000
     networks:
       - homepage
-      - traefik-public
     environment:
-      - HOST=fabianvolkers.com,www.fabianvolkers.com
-      - DEV_MODE=True
+      - HOST=127.0.0.1,fabianvolkers.com,www.fabianvolkers.com
+      - DEV_MODE=False
+      - DJANGO_LOGLEVEL=debug
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME}
       - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}
@@ -29,7 +29,6 @@ services:
       - EMAIL_CONTACT_ADDRESS={$EMAIL_CONTACT_ADDRESS}
       - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
       - MEDIA_URL=http://media.example.com:1337/
-      - MEDIA_ROOT=/var/www/media
       - STATIC_URL=http://media.example.com:1337/static/
 
     depends_on:
@@ -37,17 +36,7 @@ services:
     volumes:
       - media:/var/www/media
       - static:/home/app/web/static
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.homepage-http.rule=Host(`fabianvolkers.com`, `www.fabianvolkers.com`)"
-      - "traefik.http.routers.homepage-http.entrypoints=web"
-      - "traefik.http.routers.homepage-http.middlewares=redirect-web-to-websecure@internal"
-      - "traefik.http.routers.homepage-https.rule=Host(`fabianvolkers.com`, `www.fabianvolkers.com`)"
-      - "traefik.http.routers.homepage-https.entrypoints=websecure"
-      - "traefik.http.routers.homepage-https.tls=true"
-      - "traefik.http.routers.homepage-https.service=homepage"
-      - "traefik.http.routers.homepage-https.tls.certresolver=le"
-      - "traefik.http.services.homepage.loadbalancer.server.port=8000"
+
   db:
     container_name: postgresdb
     image: postgres:latest
@@ -77,19 +66,7 @@ services:
       - static:/var/www/media/static
     depends_on:
       - web
-    networks:
-      - traefik-public
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.nginx-http.rule=Host(`media.fabianvolkers.com`)"
-      - "traefik.http.routers.nginx-http.entrypoints=web"
-      - "traefik.http.routers.nginx-http.middlewares=redirect-web-to-websecure@internal"
-      - "traefik.http.routers.nginx-https.rule=Host(`media.fabianvolkers.com`)"
-      - "traefik.http.routers.nginx-https.entrypoints=websecure"
-      - "traefik.http.routers.nginx-https.tls=true"
-      - "traefik.http.routers.nginx-https.service=nginx"
-      - "traefik.http.routers.nginx-https.tls.certresolver=le"
-      - "traefik.http.services.nginx.loadbalancer.server.port=80"
+
 volumes:
   postgres-data:
   media:
@@ -97,5 +74,3 @@ volumes:
 
 networks:
   homepage:
-  traefik-public:
-    external: true
