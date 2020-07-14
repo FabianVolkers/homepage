@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 import logging.config
 import os
+import pytz
 import random
 
 from django.utils.log import DEFAULT_LOGGING
@@ -211,11 +212,12 @@ LOCALE_PATHS = [
 
 LANGUAGE_COOKIE_NAME = 'djangolanguage'
 
-TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
+
+# Timezone support
+TIME_ZONE = os.getenv('TIMEZONE', 'UTC')
+PYTZ = pytz.timezone(TIME_ZONE)
 
 USE_TZ = True
 
