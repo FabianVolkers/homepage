@@ -21,83 +21,33 @@ from get_docker_secret import get_docker_secret
 # Load environment variables from .env file
 load_dotenv()
 
-DEFAULTS = {
-
-}
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Load dev mode env var and cast as boolean
-DEV_MODE = os.getenv('DEV_MODE', False)
-if DEV_MODE.lower() == 'true':
-    DEV_MODE = True
-else:
-    DEV_MODE = False
+# Load django environment env var
+ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT', 'production')
 
-DATABASE = os.getenv('DATABASE', 'sqlite')
 HOST = os.getenv('HOST', '127.0.0.1').split(",")
 
-if DEV_MODE:
-    PROTO = 'http'
-
+if ENVIRONMENT == 'development':
+    PROTO = os.getenv('PROTO', 'http')
     PORT = '8000'
+    BASE_URL = f'{PROTO}://{HOST[0]}:{PORT}'
+
     MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
     MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(BASE_DIR, 'media/'))
 
-    if DATABASE == 'sqlite':
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-            }
-        }
-    elif DATABASE == 'postgres':
-        DATABASES = {
-            "default": {
-                "ENGINE": "django.db.backends.postgresql",
-                "NAME": get_docker_secret('postgres_db'),
-                "USER": get_docker_secret('postgres_user'),
-                "PASSWORD": get_docker_secret('postgres_password'),
-                "HOST": get_docker_secret('database_host'),
-                "PORT": get_docker_secret('database_port'),
-            }
-        }
-else:
+elif ENVIRONMENT == 'production' or ENVIRONMENT == 'staging':
 
-    PROTO = 'https'
+    PROTO = os.getenv('PROTO', 'https')
+    BASE_URL = f'{PROTO}://{HOST[0]}'
+
     MEDIA_URL = os.getenv('MEDIA_URL', f'{PROTO}://media.{HOST[0]}')
     MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(BASE_DIR, 'media/'))
-    if DATABASE == 'sqlite':
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-            }
-        }
-    elif DATABASE == 'postgres':
-        DATABASES = {
-            "default": {
-                "ENGINE": "django.db.backends.postgresql",
-                "NAME": get_docker_secret('postgres_db'),
-                "USER": get_docker_secret('postgres_user'),
-                "PASSWORD": get_docker_secret('postgres_password'),
-                "HOST": get_docker_secret('database_host'),
-                "PORT": get_docker_secret('database_port'),
-            }
-        }
-        """ DATABASES = {
-            "default": {
-                "ENGINE": "django.db.backends.postgresql",
-                "NAME": os.getenv('POSTGRES_DB'),
-                "USER": os.getenv('POSTGRES_USER'),
-                "PASSWORD": os.getenv('POSTGRES_PASSWORD'),
-                "HOST": os.getenv('DATABASE_HOST'),
-                "PORT": os.getenv('DATABASE_PORT'),
-            }
-        } """
+
 
 # Logging Configuration
-#LOGGING_CONFIG = None
+
 # Get loglevel from env
 LOGLEVEL = os.getenv('DJANGO_LOGLEVEL', 'info').upper()
 
@@ -137,21 +87,18 @@ LOGGING = {
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = os.getenv('STATIC_URL', '/static/')
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
-""" SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', ''.join(random.SystemRandom().choice(
-    'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50))) """
-
 SECRET_KEY = get_docker_secret('django_secret_key', default=''.join(random.SystemRandom().choice(
     'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)))
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = (DEV_MODE == True)
+DEBUG = os.getenv(
+    'DEBUG', (ENVIRONMENT == 'development' or ENVIRONMENT == 'staging' or LOGLEVEL == 'DEBUG'))
 
 ALLOWED_HOSTS = HOST
 
@@ -205,6 +152,28 @@ WSGI_APPLICATION = 'homepage.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+DATABASE = os.getenv('DATABASE', 'sqlite')
+
+
+if DATABASE == 'postgres':
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": get_docker_secret('postgres_db', None),
+            "USER": get_docker_secret('postgres_user', None),
+            "PASSWORD": get_docker_secret('postgres_password', None),
+            "HOST": get_docker_secret('database_host', None),
+            "PORT": get_docker_secret('database_port', None),
+        }
+    }
+else:
+    # Fallback on sqlite if db is not specified
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -259,12 +228,6 @@ EMAIL_HOST_PASSWORD = get_docker_secret('email_host_password')
 EMAIL_PORT = get_docker_secret('email_port', default=587)
 EMAIL_CONTACT_ADDRESS = get_docker_secret('email_contact_address')
 DEFAULT_FROM_EMAIL = get_docker_secret('default_from_email')
-#EMAIL_HOST = os.getenv("EMAIL_HOST")
-#EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-#EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-#EMAIL_PORT = os.getenv("EMAIL_PORT", 587)
-#EMAIL_CONTACT_ADDRESS = os.getenv('EMAIL_CONTACT_ADDRESS')
-#DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
 MAX_PAGES = 10
 MAX_SECTIONS = 10
