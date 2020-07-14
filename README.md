@@ -32,8 +32,7 @@ This portfolio page is built with Python and Django. Django was chosen for it's 
 
 ## Deployment
 
-The app is running live at [fabianvolkers.com](https://fabianvolkers.com). The Django app is running as a service inside a Docker Swarm, in a stack with a postgres database container and an nginx container for serving media and static files. On top of that, load balancing and proxying is handled by a Traefik instance inside the Swarm. Monitoring is setup using the django metrics exporter for prometheus. Prometheus and Grafana run inside the same swarm currently, due to the lack of financial resources for more servers. I'm also planning to connect it to my elastic instance.
-
+The app is running live at [fabianvolkers.com](https://fabianvolkers.com). The Django app is running as a service inside a Docker Swarm, in a stack with a postgres database container and an nginx container for serving media and static files. On top of that, load balancing and proxying is handled by a Traefik instance inside the Swarm. 
 ![](.github/.media/deployment-architecture.png)
 
 ## Run the App
@@ -47,6 +46,7 @@ The easiest way to run the app is to take the included `docker-compose.yml` file
 All services will be pulled from docker hub. 
 
 ```bash
+
 # Create a directory and download the docker-compose file
 mkdir homepage && cd homepage
 wget https://raw.githubusercontent.com/FabianVolkers/portfolio/latest/docker-compose.yml
