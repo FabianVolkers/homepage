@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 import uuid
 
@@ -15,6 +16,11 @@ from django.utils.translation import gettext_lazy as _
 
 from .translations import filter_translations
 from .validators import *
+
+"""
+Get the logger
+"""
+logger = logging.getLogger(__name__)
 
 """
 A couple of hard coded choices for the database models.
@@ -89,6 +95,8 @@ class Icon(models.Model):
         self.slug = slugify(self.name)
         self.colour = self.colour_value
 
+        logger.info('Saved icon %s in database', self.slug)
+
 
 """
 Abstract Translatable model from which all models with translatable fields inherit
@@ -136,6 +144,8 @@ class PageType(models.Model):
             self.view_name = self.overwrite_view_name
         else:
             self.view_name = f"portfolio:{self.name}"
+
+        logger.info('Saved page type %s in database', self.name)
 
         return super().save(force_insert=force_insert,
                             force_update=force_update,
@@ -407,6 +417,8 @@ class CollectionItem(AbstractTranslatable):
 
     def save(self):
         self.slug = slugify(self.name)
+        logger.info('Saved collection item %s (%s) in database',
+                    self.slug, self.lang)
         super().save()
 
 
@@ -431,12 +443,10 @@ class Contact(models.Model):
         return self.email_address
 
     def send_confirmation_email(self, token):
-        url = reverse('portfolio:contact', args=['confirm'])
-        url = f"{url}?{QueryDict(f'id={self.id}&token={token}').urlencode()}"
-        if settings.DEV_MODE:
-            url = f'{settings.PROTO}://{settings.HOST[0]}:{settings.PORT}/{url}'
-        else:
-            url = f'{settings.PROTO}://{settings.HOST[0]}{url}'
+
+        confirm_url = reverse('portfolio:contact', args=['confirm'])
+        confirm_params = QueryDict(f'id={self.id}&token={token}').urlencode()
+        url = f"{settings.BASE_URL}{confirm_url}?{confirm_params}"
 
         pages = Page.objects.all().select_related('common')
         pages = filter_translations(
@@ -450,15 +460,25 @@ class Contact(models.Model):
 
         html_email = render_to_string(
             'portfolio/email_confirmation.html', context=context)
-        print(html_email)
+
         send_mail(
             subject='Please Confirm your email address',
             from_email="Fabian Volkers <noreply@fabianvolkers.com>",
             recipient_list=[self.email_address],
             message=f'Use this link to confirm your email address {url}',
             html_message=html_email,
-            fail_silently=False
+            fail_silently=(settings.ENVIRONMENT == 'production')
         )
+
+        logger.info('Sent confirmation email to contact %s ', self.id)
+
+        def save(self, force_insert=False, force_update=False,
+                 using=None, update_fields=None):
+
+            logger.info('Saved contact %s in database', self.id)
+
+            return super().save(force_insert, force_update,
+                                using, update_fields)
 
 
 """
@@ -504,10 +524,14 @@ class Message(models.Model):
             headers=headers
         )
         email.attach_alternative(html_message, 'text/html')
-        email.send(fail_silently=False)
+        email.send(fail_silently=(settings.ENVIRONMENT == 'production'))
 
-        self.date_sent = datetime.datetime.now()
+        self.date_sent = datetime.datetime.now(settings.PYTZ)
         self.sent = True
+        self.save()
+
+        logger.info('Sent message %s from contact %s to %s',
+                    self.id, self.contact.id, settings.EMAIL_CONTACT_ADDRESS)
 
 
 """
