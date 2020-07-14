@@ -1,4 +1,5 @@
 
+import logging
 from importlib import import_module
 
 from django.conf import settings
@@ -21,6 +22,7 @@ from .translations import filter_translations
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 s = SessionStore()
 
+logger = logging.getLogger(__name__)
 
 """
 Base Context, providing navigation and footer links for all pages.
@@ -88,8 +90,6 @@ class PageView(BaseContext, generic.ListView):
         queryset = filter_translations(queryset, lang)
 
         context['collectionitems'] = queryset
-
-        # print(context['pages'].values())
 
         spotlights = CollectionItem.objects.filter(
             common__spotlight=True).select_related(
@@ -191,40 +191,13 @@ class DetailView(BaseContext, generic.ListView):
         return queryset
 
 
-"""
-A few extra views with individual templates that don't fit the current
-Page > Section Setup (can be refactored to work as such)
-
-The names are fairly self-explanatory.
-
-"""
-
-
 class BaseTemplateView(BaseContext, generic.TemplateView):
     pass
 
 
 """
-class ImprintView(BaseTemplateView):
-    template_name = 'portfolio/imprint.html'
+Contact view, for contact form actions and email confirmation.
 
-
-class PrivacyView(BaseTemplateView):
-    template_name = 'portfolio/privacy.html'
- """
-
-"""
-Contact views, for contact form actions and email confirmation.
-
-Needs refactoring into single UserResponse view, then based on path
-actions get taken
-
-Needed paths:
-contact/confirm-email
-contact/email-confirmed
-contact/thanks
-contact/delete
-contact/messages
 """
 
 
@@ -341,7 +314,7 @@ class ContactView(BaseContext, generic.View):
         pass
 
     def get_context_data(self, **kwargs):
-        print(kwargs)
+
         context = super().get_context_data(**kwargs)
 
         contact_id = self.request.GET.get('id')
@@ -356,12 +329,13 @@ class ContactView(BaseContext, generic.View):
             try:
                 contact = Contact.objects.get(id=contact_id)
                 context['contact'] = contact
-                print(contact)
+
                 if response_slug in ['confirmed', 'thanks', 'messages']:
                     context['messages'] = Message.objects.filter(
                         contact=contact, sent=True)
             except ValidationError:
-                print('invalid contact id, skipping contact')
+                logging.info(
+                    'invalid contact id %s, skipping contact', contact_id)
 
         return context
 
@@ -372,44 +346,6 @@ class ContactView(BaseContext, generic.View):
 class EmailView(BaseContext, generic.DetailView):
     model = Message
     template_name = 'portfolio/email_confirmation'
-
-
-""" 
-def contact(request):
-    email = request.POST['email']
-    subject = request.POST['subject']
-    content = request.POST['message']
-    try:
-        contact = Contact.objects.get(email_address=email)
-    except Contact.DoesNotExist:
-        contact = Contact(email_address=email)
-        contact.save()
-        token = account_activation_token.make_token(contact)
-        contact.send_confirmation_email(token)
-
-    # try:
-
-    message = Message(
-        contact=contact,
-        subject=subject,
-        content=content)
-
-    message.save()
-
-    if message.contact.email_confirmed:
-        message.send()
-        return HttpResponseRedirect(
-            reverse(
-                'portfolio:contact-thanks',
-                args=[message.id]))
-    else:
-        return HttpResponseRedirect(
-            reverse(
-                'portfolio:unconfirmed-email',
-                args=[contact.id])) """
-
-# except:
-#    return HttpResponseRedirect(reverse('portfolio:index'))
 
 
 def contacted(request, message_id):
@@ -465,6 +401,9 @@ def set_language(request):
             response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code)
 
     translation.activate(lang_code)
+
+    logger.debug('Set language to %s', lang_code)
+
     return response
 
 
