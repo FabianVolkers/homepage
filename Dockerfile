@@ -24,7 +24,7 @@ RUN pip install -r requirements.txt
 #RUN pip install Pillow
 
 RUN mkdir -p $APP_HOME/static
-RUN mkdir -p $APP_HOME/media
+RUN mkdir -p $APP_HOME/media/images
 # Copy the rest of the code. 
 COPY ./homepage $APP_HOME
 
