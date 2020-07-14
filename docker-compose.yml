@@ -4,6 +4,7 @@ services:
   web:
     container_name: django
     build: .
+    #image: fabiserv/homepage
     command: gunicorn homepage.wsgi:application --bind 0.0.0.0:8000 --workers=4
     ports:
       - 8000:8000
