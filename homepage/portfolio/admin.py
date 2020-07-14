@@ -134,7 +134,7 @@ admin.site.register(CollectionItemCommon, CollectionItemCommonAdmin)
 admin.site.register(ContactResponseCommon, ContactResponseCommonAdmin)
 admin.site.register(ContactResponseAction)
 
-if settings.DEV_MODE:
+if settings.ENVIRONMENT == 'development':
     admin.site.register(FooterLink)
     admin.site.register(NavLink)
     admin.site.register(CollectionItem, CollectionItemAdmin)

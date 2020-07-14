@@ -18,6 +18,6 @@ urlpatterns = [
             views.PageView.as_view(), name='page'),
 ]
 
-if settings.DEV_MODE:
+if settings.ENVIRONMENT == 'development':
     urlpatterns += static(settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)
