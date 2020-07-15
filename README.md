@@ -74,7 +74,8 @@ docker-compose up -d
 Alternatively you can uncomment the `build` tag and comment out the `image` tag, to build the container yourself. This will naturally only work if you have cloned this repository.
 
 ### Docker
-If you just want to check out the django app without worrying about postgres or nginx, you can just use the following command to get started. This will use a small sample sqlite db. 
+This is currently not working due to default settings, use the docker-compose method to try out the software.
+~~If you just want to check out the django app without worrying about postgres or nginx, you can just use the following command to get started. This will use a small sample sqlite db.~~
 ```bash
 docker run --publish 8000:8000 --detach --name homepage fabiserv/homepage:latest
 ```
