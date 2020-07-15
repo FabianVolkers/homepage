@@ -6,6 +6,7 @@
 - [Features](#features)
 - [Technologies](#technologies)
 - [Deployment](#deployment)
+- [Branches](#branches)
 - [Run the App](#run-the-app)
   - [Docker-Compose](#docker-compose)
     - [Pull Docker Hub image](#pull-docker-hub-image)
@@ -15,7 +16,7 @@
 
 ## Description
 
-This project started as my personal portfolio page but has become so dynamically configurable, it could be used for any website. My instance of this softwar is running live at [fabianvolkers.com](https://fabianvolkers.com). It features an overview of the projects I've worked on as well as detail views for each project. Additionally, it features a selection of my photographs. There is a contact form for enquiries.
+This project started as my personal portfolio page but has become so dynamically configurable, it could be used for any website. My instance of this software is running live at [fabianvolkers.com](https://fabianvolkers.com). It features an overview of the projects I've worked on as well as detail views for each project. Additionally, it features a selection of my photographs. There is a contact form for enquiries.
 
 ## Features
 
@@ -23,17 +24,27 @@ This project started as my personal portfolio page but has become so dynamically
 - Add links to other platforms you're active on
 - Dynamically add collections with unlimited items
 - Contact form with connection to smtp server
-- Required email confirmation
--
+- Required email confirmation to avoid spam
 
 ## Technologies
 
-This portfolio page is built with Python and Django. Django was chosen for it's powerful and secure ORM, built-in DB migrations and admin page for managing the database.
+This web app is built with Python and Django. Django was chosen for it's powerful and secure ORM, built-in DB migrations and admin page for managing the database. The application is connected to a Postgres database. Media and static content is served by Nginx.
+
+Diagram of request and response flows within the architecture
+![](.github/.media/software-architecture.png)
 
 ## Deployment
 
-The app is running live at [fabianvolkers.com](https://fabianvolkers.com). The Django app is running as a service inside a Docker Swarm, in a stack with a postgres database container and an nginx container for serving media and static files. On top of that, load balancing and proxying is handled by a Traefik instance inside the Swarm. 
+The app is running live at [fabianvolkers.com](https://fabianvolkers.com). The Django app is running as a service inside a Docker Swarm, in a stack with a postgres database container and an nginx container for serving media and static files. On top of that, load balancing and proxying is handled by a Traefik instance inside the Swarm.
+
+
+Diagram of the Docker stack
 ![](.github/.media/deployment-architecture.png)
+
+## Branches
+
+The repository is mainly split into a 'latest' branch and a 'develop' branch. Every push to latest triggers a rebuild of the Docker image on Docker Hub. Once the build succeeds, the service powering fabianvolkers.com is automatically updated with the latest image. The plan for develop is similar, to then run at beta.fabianvolkers.com. Development workflow is close to the Git Flow model, with feature branches branched of developed and merged upon completion. Every once in a while develop gets merged with latest to keep the main release branch up to date.
+
 
 ## Run the App
 ### Docker-Compose
