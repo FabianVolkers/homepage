@@ -144,7 +144,9 @@ nav a:visited {
 
 .spotlight-img {
     position: absolute;
-    top: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: none;
     min-width: 100%;
     min-height: 100%;
@@ -256,11 +258,20 @@ nav a:visited {
 
 .collection-item div {
     position: relative;
+    padding-top: 56.25%;
+    overflow: hidden;
+    width: 20vw;
+
 }
 
 .collection-item img {
-    max-width: 20vw;
     z-index: 200;
+    position: absolute;
+    min-height: 100%;
+    min-width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 
@@ -631,8 +642,14 @@ footer i {
 
     }
 
+    .collection-item div {
+
+        width: 98%;
+
+    }
+
     .collection-item img {
-        max-width: 80vw;
+
         z-index: 200;
     }
 
