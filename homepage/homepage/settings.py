@@ -92,9 +92,11 @@ LOGGING = {
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = os.getenv('STATIC_URL', '/static/')
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'portfolio/static/')
+]
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_docker_secret('django_secret_key', default=''.join(random.SystemRandom().choice(
