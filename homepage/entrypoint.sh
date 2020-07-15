@@ -26,16 +26,18 @@ python manage.py makemigrations portfolio --noinput
 python manage.py migrate --noinput 
 
 
-#Change admin password based on env var, if admin does not exist createsuperuser
+# Try setting env var admin password, redirect error output to dev/null
 python manage.py shell --command="import os
 from django.contrib.auth.models import User
 u = User.objects.get(username=os.getenv('DJANGO_SUPERUSER_USERNAME'))
 u.set_password(os.getenv('DJANGO_SUPERUSER_PASSWORD'))
 u.save()
 " 2>/dev/null
+
 if [ $? -eq 0 ]; then
     echo "\nSet django superuser password"
 else
+    #if admin does not exist createsuperuser
     echo "\nCreating django superuser"
     python manage.py createsuperuser --no-input
 fi
