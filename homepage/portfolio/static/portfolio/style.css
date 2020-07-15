@@ -493,6 +493,7 @@ footer i {
 
 .item-img {
     max-width: 100%;
+    max-height: 90vh;
 }
 
 .item-description {
@@ -535,8 +536,6 @@ footer i {
     label {
         font-size: 25px;
     }
-
-
 
 
     .burger-menu {
@@ -598,8 +597,6 @@ footer i {
         list-style: none;
         padding: 10% 12%;
     }
-
-
 
 
 
@@ -727,89 +724,3 @@ footer i {
     }
 
 }
-
-
-/* 
-#blog {
-    background: #3B5998;
-    color: white;
-}
-
-#blog:hover {
-    background: #FFFFFF;
-    color: #3B5998 !important;
-}
-
-#twitter {
-    background: #55ACEE;
-    color: white;
-}
-
-#twitter:hover {
-    background: #FFFFFF;
-    color: #55ACEE !important;
-}
-
-#github {
-    background: #2B2728;
-    color: white;
-}
-
-#github:hover {
-    background: #FFFFFF;
-    color: #2B2728 !important;
-}
-
-#youtube {
-    background: #cc181e;
-    color: white;
-}
-
-#youtube:hover {
-    background: #FFFFFF;
-    color: #cc181e !important;
-}
-
-#free-code-camp {
-    background: #00a31b;
-    color: white;
-
-}
-
-#free-code-camp:hover {
-    background: #FFFFFF;
-    color: #00a31b !important;
-}
-
-#soundcloud {
-    background: #ff7700;
-    color: white;
-
-}
-
-#soundcloud:hover {
-    background: #FFFFFF;
-    color: #ff7700 !important;
-}
-
-#spotify {
-    background: #84bd00;
-    color: white;
-}
-
-#spotify:hover {
-    background: #FFFFFF;
-    color: #84bd00 !important;
-}
-
-#linkedin {
-    background: #0077B5;
-    color: white;
-}
-
-#linkedin:hover {
-    background: #FFFFFF;
-    color: #0077b5 !important;
-
-}
- */
