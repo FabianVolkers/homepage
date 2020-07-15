@@ -57,20 +57,9 @@ function setImageSize() {
     let ratio = width / height;
 
     if (ratio > divRatio) {
-      //image is wider than needed
       image.style.height = '100%';
     } else {
       image.style.width = '100%'
-      //imagge is taller than needed
     }
-
-    /* console.log(ratio)
-    if (height >= width) {
-      image.style.width = '100%';
-    } else if (width > height) {
-      //image.style.height = '100%'; 
-
-  }*/
-
   }
 }
