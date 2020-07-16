@@ -47,8 +47,9 @@ elif ENVIRONMENT == 'production' or ENVIRONMENT == 'staging':
     MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(BASE_DIR, 'media/'))
 
 elif ENVIRONMENT == 'production':
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
+    pass
+    #CSRF_COOKIE_SECURE = True
+    #SESSION_COOKIE_SECURE = True
 
 
 # Logging Configuration
