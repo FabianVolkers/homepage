@@ -2,7 +2,7 @@ asgiref==3.2.10
 autopep8==1.5.3
 beautifulsoup4==4.9.1
 cssutils==1.0.2
-Django==3.0.7
+Django==3.1.9
 django-inlinecss==0.3.0
 future==0.18.2
 get-docker-secret==1.0.1
