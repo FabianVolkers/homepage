@@ -7,7 +7,7 @@ django-inlinecss==0.3.0
 future==0.18.2
 get-docker-secret==1.0.1
 gunicorn==20.0.4
-Pillow==7.2.0
+Pillow==8.2.0
 psycopg2-binary==2.8.5
 pycodestyle==2.6.0
 pynliner==0.8.0
